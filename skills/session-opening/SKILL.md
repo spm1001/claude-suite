@@ -114,7 +114,7 @@ When `ORPHANED_HANDOFFS=true` in script output:
 
 1. **Tell the user:** "Found local .handoff* files — these are invisible to /open"
 2. **Offer to rescue:** "Want me to move them to the central location so /open can find them?"
-3. **If yes:** `mv .handoff* ~/.claude/handoffs/-Users-modha-Repos-<project>/`
+3. **If yes:** `mv .handoff* ~/.claude/handoffs/<encoded-path>/`
 
 **Why this matters (Jan 2026):** Some Claudes wrote handoffs locally instead of centrally. These contained valuable context but were invisible — /open showed stale handoffs instead.
 

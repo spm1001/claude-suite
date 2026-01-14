@@ -495,7 +495,7 @@ Available in `references/` directory:
 
 **Full audit:**
 ```
-check this server: kube.lan (user: modha)
+check this server: kube.lan (user: admin)
 ```
 
 **Security only:**
