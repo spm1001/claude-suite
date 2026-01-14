@@ -21,7 +21,7 @@ Behavioral skills for Claude Code. Point a fresh Claude here and say "help me in
 - `server-checkup` — Linux server management
 - `skill-check` — Validate skills before sharing
 - `sprite` — Manage Sprites.dev remote VMs
-- `dbt` — DBT skills practice
+- `setup` — Install these skills on a fresh machine
 
 ## Quick Install
 
