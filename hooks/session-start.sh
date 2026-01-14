@@ -4,12 +4,14 @@
 # Outputs session context to stdout (Claude sees this automatically)
 # Runs heavy updates in background (no stdout)
 #
-# Lives in: claude-suite/scripts
+# Lives in: claude-suite/hooks/
 # Symlinked from: ~/.claude/hooks/session-start.sh
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+# Scripts are in sibling folder, but we check via ~/.claude/scripts/ symlinks
+# which is what actually matters for the user's setup
+SCRIPTS_DIR="$HOME/.claude/scripts"
 
 # === QUICK HEALTH CHECK ===
 # Fast validation of critical infrastructure. Errors here = silent failures later.
@@ -24,8 +26,8 @@ quick_health_check() {
         fi
     done
 
-    # Check this hook's companion script exists
-    if [ ! -x "$SCRIPT_DIR/open-context.sh" ]; then
+    # Check companion scripts exist
+    if [ ! -x "$SCRIPTS_DIR/open-context.sh" ]; then
         issues="$issues\n  ❌ open-context.sh missing or not executable"
     fi
 
@@ -60,8 +62,7 @@ TRACE_FILE="$HOME/.claude/.hook-trace"
 # === CONTEXT OUTPUT (stdout → Claude) ===
 
 # Run context gathering script (handoff, beads, time, updates)
-# open-context.sh lives in same directory (this repo)
-CONTEXT_SCRIPT="$SCRIPT_DIR/open-context.sh"
+CONTEXT_SCRIPT="$SCRIPTS_DIR/open-context.sh"
 if [ -x "$CONTEXT_SCRIPT" ]; then
     CONTEXT_START=$(ms_now)
     "$CONTEXT_SCRIPT" 2>/dev/null || true
