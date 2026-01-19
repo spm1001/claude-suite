@@ -53,7 +53,7 @@ sprite exec bash -c 'tmux send-keys -t innerClaude "export TERM=xterm-256color &
 sprite exec bash -c 'tmux pipe-pane -t innerClaude "cat > /tmp/claude-output.txt"'
 sleep 15
 
-# 5. Read captured output
+# 5. Read captured output (strings filters escape codes into readable text)
 sprite exec bash -c 'cat /tmp/claude-output.txt | strings | tail -100'
 ```
 
@@ -66,6 +66,8 @@ sprite exec bash -c 'cat /tmp/claude-output.txt | strings | tail -100'
 | `capture-pane -p` | ❌ | Misses alternate screen buffer |
 | `capture-pane -a` | ❌ | Returns "no alternate screen" |
 | `pipe-pane "cat > file"` | ✅ | Captures all output including alternate screen |
+
+**Note:** Raw output contains ANSI escape codes. Use `strings` to filter into readable text. The UI content IS captured, just wrapped in terminal control sequences.
 
 ### Sending Input
 
