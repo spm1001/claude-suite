@@ -283,6 +283,27 @@ sprite exec bash -c 'export NVM_DIR="/.sprite/languages/node/nvm" && . "$NVM_DIR
 
 **For full troubleshooting guide:** See [references/troubleshooting.md](references/troubleshooting.md)
 
+### Known Issue: pipe-pane May Not Capture Output (Jan 2026)
+
+**Symptom:** pipe-pane captures your *input* to InnerClaude but not InnerClaude's *responses*. You see your keystrokes in the output file but Claude's UI output is missing. InnerClaude shows "0 tokens" for extended periods.
+
+**Root cause:** The `sprite exec bash -c 'tmux ...'` chain doesn't allocate a proper PTY. InnerClaude reports `TTY=not a tty` and `stty: Inappropriate ioctl for device`.
+
+**Diagnostic:**
+```bash
+sprite exec bash -c 'tmux send-keys -t innerClaude "tty" Enter'
+# If it returns "not a tty", output capture won't work reliably
+```
+
+**Potential fix (untested):** Use `sprite exec -tty` to allocate a pseudo-TTY:
+```bash
+sprite exec -tty bash -c 'tmux new-session -d -s innerClaude ...'
+```
+
+**Workaround:** Human attaches directly via `sprite console` then `tmux attach -t innerClaude`. This establishes a proper terminal connection.
+
+**Status:** Open. The `-tty` flag exists but hasn't been tested with the full OuterClaude pattern.
+
 ---
 
 ## Anti-Patterns
