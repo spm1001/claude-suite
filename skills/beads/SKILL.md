@@ -23,6 +23,7 @@ beads has extensive reference material. To avoid reading all files:
 - **Portfolio view / hub / central database** → `references/PORTFOLIO.md` + `~/.claude/scripts/beads-portfolio.sh` (all beads across repos)
 - **Hub hygiene / archiving** → "Database Hygiene" section in this file (Archive Pattern subsection)
 - **Dangerous commands / hub corruption** → "Dangerous Commands" in this file, "Hub Recovery Workflow" in references/TROUBLESHOOTING.md
+- **bd delete not working / zombie repos** → "The bd delete Resurrection Problem" in this file
 - **Full GTD portfolio view** → Run `~/.claude/scripts/beads-portfolio.sh` (health checks, auto-archive, clean view)
 
 Read SKILL.md first, then load specific references as needed.
@@ -270,6 +271,7 @@ bd list --status closed -n 0 --json | jq -r '.[].id' | xargs -I {} bd delete {} 
 | `bd sync --rename-on-import` | Renames ALL issues to current repo's prefix | Issues from other repos get wrong prefix, corrupts hub and all additional repos |
 | `bd init` inside `.beads/` directory | Creates nested `.beads/.beads/` | Database confusion, daemon errors |
 | Creating issues in hub repo | Wrong prefix, won't route | Issues orphaned, pollute hub |
+| `bd delete` alone (without JSONL cleanup) | Only removes from DB, not JSONL | Issues resurrect on next sync, daemon recreates directories |
 
 ### The `--rename-on-import` Disaster (Jan 2026)
 
@@ -288,6 +290,40 @@ bd sync --rename-on-import  # DON'T DO THIS
 ```
 
 **Correct response to prefix mismatch:** See [Hub Recovery Workflow](references/TROUBLESHOOTING.md#hub-recovery-workflow).
+
+### The `bd delete` Resurrection Problem (Jan 2026)
+
+**`bd delete` only removes from SQLite DB — not from JSONL.** On next daemon sync, deleted issues get re-imported from JSONL, and the daemon recreates target directories.
+
+**Symptoms:**
+- Deleted folders keep reappearing with empty `.beads/issues.jsonl`
+- `bd delete` appears to work but issues return after sync
+- "Zombie" repos that won't stay dead
+
+**Full cleanup requires:**
+```bash
+# 1. Archive first (if you want history)
+bd list -n 0 --json | jq -c '.[] | select(.id | test("^PREFIX-"))' >> ~/.beads-archive/$(date +%Y-%m)-cleanup.jsonl
+
+# 2. Delete from DB
+bd delete PREFIX-xxx --force
+
+# 3. Remove from JSONL manually
+cd .beads
+cp issues.jsonl issues.jsonl.bak
+grep -v '"id":"PREFIX-' issues.jsonl.bak > issues.jsonl
+
+# 4. Clean sync_base.jsonl too
+cp sync_base.jsonl sync_base.jsonl.bak
+grep -v '"id":"PREFIX-' sync_base.jsonl.bak > sync_base.jsonl
+
+# 5. Reimport and commit
+bd import -i issues.jsonl --force
+rm *.bak
+git add -A && git commit -m "Remove orphaned issues from JSONL"
+```
+
+**Why this happens:** The daemon treats JSONL as authoritative source. DB deletes don't propagate to JSONL until explicit export, but sync imports from JSONL first.
 
 ## When to File Issues
 
