@@ -22,6 +22,9 @@ Then restart Claude Code (`/exit` → `claude`).
 **Issue tracking** — for work spanning multiple sessions:
 - `beads` — Track work with dependencies (requires [bd CLI](https://github.com/beads-dev/bd))
 
+**Quality:**
+- `/titans` (or `/review`) — Three-lens code review (hindsight, craft, foresight)
+
 **Utilities:**
 - `/diagram` — Create diagrams with iterative render-and-check
 - `/screenshot` — Capture screen to verify changes
