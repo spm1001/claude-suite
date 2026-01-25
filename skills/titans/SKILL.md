@@ -43,23 +43,33 @@ If scope is unclear, ask. Don't review the entire codebase by accident.
 
 ### 2. Dispatch reviewers
 
-Launch three parallel subagents (Explore mode). Each receives:
-- The **Reviewer Brief** for their lens (see [references/REVIEWERS.md](references/REVIEWERS.md))
+Launch three parallel Task calls. Use `Explore` subagent with `model: "opus"` — deep review needs Opus-level reasoning, not Haiku speed.
+
+Each reviewer receives:
+- The **Reviewer Brief** for their lens (from [references/REVIEWERS.md](references/REVIEWERS.md))
 - The scoped files/context
 - Awareness of the other two reviewers (to minimize redundancy)
+- The output structure template
 
 ```
-# Conceptual — actual invocation depends on your orchestration setup
-For each reviewer in [EPIMETHEUS, METIS, PROMETHEUS]:
-  Fork Explore agent with:
-    - Reviewer brief
-    - Scoped files
-    - Output structure template
+Task(
+  subagent_type: "Explore",
+  model: "opus",
+  description: "EPIMETHEUS review of [scope]",
+  prompt: "[Reviewer brief from REVIEWERS.md] + [scoped files] + [output template]"
+)
 ```
+
+Dispatch all three in a single message (parallel execution).
 
 ### 3. Collect outputs
 
 Each reviewer returns structured findings. See [Output Structure](#output-structure) below.
+
+**Partial failures:** If a reviewer times out, errors, or returns malformed output:
+- Proceed with available outputs (two reviews > none)
+- Note the gap in synthesis ("Epimetheus did not complete — hindsight lens missing")
+- Consider re-running the failed reviewer with tighter scope
 
 ### 4. Synthesize
 
@@ -152,14 +162,14 @@ Repeated across reviewers:
 
 ---
 
-## Token Budget Expectations
+## Observed Token Consumption
 
-Based on observed runs:
-- **Epimetheus:** 40-50 tool uses, 100-130k tokens (deepest spelunking)
-- **Metis:** 30-35 tool uses, 100-120k tokens (structural analysis)
-- **Prometheus:** 20-25 tool uses, 70-80k tokens (architectural assessment)
+From test runs, reviewers tend to use tokens in this order:
+- **Epimetheus** uses the most — deepest spelunking through code paths
+- **Metis** uses moderate — structural analysis, less exploration
+- **Prometheus** uses the least — architectural assessment from less code
 
-If a reviewer seems to be looping or consuming excessive tokens, it may indicate unclear scope or missing context. Consider interrupting and re-scoping.
+This varies by codebase size and scope clarity. If a reviewer seems to be looping, it usually indicates unclear scope — consider interrupting and re-scoping rather than waiting it out.
 
 ---
 
