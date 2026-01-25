@@ -5,7 +5,8 @@ See all beads across repos in a single view.
 ## Quick Start
 
 ```bash
-~/.claude/scripts/beads-portfolio.sh
+# From any repo with beads, see cross-project view:
+bd list --all-repos
 ```
 
 This scans all repos with `.beads/` directories and shows:
@@ -15,9 +16,9 @@ This scans all repos with `.beads/` directories and shows:
 
 ## How It Works
 
-**Read-only aggregation.** The script:
+**Read-only aggregation.** The `bd list --all-repos` command:
 1. Finds all `~/Repos/*/.beads/` directories
-2. Queries each database via `bd --db`
+2. Queries each database
 3. Displays aggregated results
 
 **Never writes.** No sync, no database updates, no corruption risk.

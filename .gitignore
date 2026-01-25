@@ -17,3 +17,6 @@ __pycache__/
 
 # Tool markers
 .sprite
+
+# Local config (use .example templates)
+skills/skill-check/scan-config.json

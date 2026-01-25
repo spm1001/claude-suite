@@ -2,7 +2,7 @@
 # Consolidated context gathering for /close
 # Outputs structured sections for Claude to parse
 
-set -e
+set -euo pipefail
 
 # === SELF-VALIDATION ===
 # Check critical dependencies before running. Fail fast with clear messages.

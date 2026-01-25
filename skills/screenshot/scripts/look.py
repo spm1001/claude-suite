@@ -36,6 +36,12 @@ import subprocess
 import sys
 from datetime import datetime
 
+# Max dimension for resizing. 1568px is optimal for Claude's vision API:
+# - Images larger than this get resized server-side anyway
+# - Pre-resizing avoids upload latency while preserving fidelity
+# - Results in ~1,600 tokens per image
+DEFAULT_MAX_SIZE = 1568
+
 try:
     from Quartz import (
         CGWindowListCopyWindowInfo,
@@ -186,7 +192,7 @@ def main():
     parser.add_argument('--categories', action='store_true', help='Group window list by category')
     parser.add_argument('--category', choices=VALID_CATEGORIES, help='Filter to one category')
     parser.add_argument('--screen', action='store_true', help='Capture entire screen')
-    parser.add_argument('--max-size', type=int, default=1568, help='Max dimension in pixels (default: 1568)')
+    parser.add_argument('--max-size', type=int, default=DEFAULT_MAX_SIZE, help=f'Max dimension in pixels (default: {DEFAULT_MAX_SIZE})')
     parser.add_argument('--native', action='store_true', help='Keep native resolution (skip resize)')
 
     args = parser.parse_args()

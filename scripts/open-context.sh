@@ -3,7 +3,7 @@
 # Pattern: notifications to stdout, content to disk
 # Claude reads files on demand (via /open or naturally)
 
-set -e
+set -euo pipefail
 
 # === PATHS ===
 BASE_CONTEXT_DIR="$HOME/.claude/.session-context"

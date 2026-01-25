@@ -20,7 +20,7 @@ beads has extensive reference material. To avoid reading all files:
 - **Molecules, wisps, protos** → `references/MOLECULES.md` (v0.34.0+)
 - **Formulas, gates, activity** → `references/MOLECULES.md` (v0.36.0+)
 - **Cross-project dependencies** → `references/MOLECULES.md` (v0.34.0+)
-- **Portfolio view (cross-project)** → Run `~/.claude/scripts/beads-portfolio.sh` or see `references/PORTFOLIO.md`
+- **Portfolio view (cross-project)** → See `references/PORTFOLIO.md`
 - **Database hygiene / archiving** → "Database Hygiene" section in this file
 - **Dangerous commands** → "Dangerous Commands" section in this file
 
@@ -411,9 +411,6 @@ bd wisp create mol-patrol                # Create ephemeral wisp
 ```
 
 **For detailed patterns and commands:** [references/MOLECULES.md](references/MOLECULES.md)
-
-user-invocable: false
----
 
 ## Issue Lifecycle
 

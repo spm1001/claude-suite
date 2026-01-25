@@ -16,13 +16,13 @@ if [ -z "$TOKEN" ]; then
     exit 1
 fi
 
-CAPTURE=/tmp/outer-inner-test.txt
-rm -f "$CAPTURE"
+CAPTURE=$(mktemp /tmp/outer-inner-test.XXXXXX)
+trap "rm -f '$CAPTURE'" EXIT
 
 echo "Starting OuterClaude/InnerClaude test..."
 
 sprite exec -tty bash -c "
-rm -f $CAPTURE
+CAPTURE=$CAPTURE  # Pass through to inner script
 
 # Start tmux with pipe-pane capture
 tmux new-session -d -s outerinner -x 150 -y 50

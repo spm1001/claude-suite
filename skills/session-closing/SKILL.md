@@ -37,7 +37,7 @@ Remember      → index session (background)
 [ -x ~/.claude/scripts/close-context.sh ] && [ -x ~/.claude/scripts/check-home.sh ] && echo "OK" || echo "BROKEN"
 ```
 
-If broken: **STOP, diagnose, then write handoff manually** rather than skipping closure entirely. See `~/Repos/claude-advanced/references/ERROR_PATTERNS.md`.
+If broken: **STOP, diagnose, then write handoff manually** rather than skipping closure entirely. See `~/Repos/claude-suite/references/ERROR_PATTERNS.md`.
 
 ---
 

@@ -37,7 +37,7 @@ Use `/open` for:
 [ -x ~/.claude/scripts/open-context.sh ] && echo "OK" || echo "BROKEN: open-context.sh missing"
 ```
 
-If pre-flight fails, **STOP and diagnose** before proceeding. See `~/Repos/claude-advanced/references/ERROR_PATTERNS.md` for common issues.
+If pre-flight fails, **STOP and diagnose** before proceeding. See `~/Repos/claude-suite/references/ERROR_PATTERNS.md` for common issues.
 
 ---
 

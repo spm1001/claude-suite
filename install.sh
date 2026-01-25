@@ -120,7 +120,7 @@ if [[ "$VERIFY_ONLY" == true ]]; then
 
     # Check skills
     info "Checking skills..."
-    for skill in beads close diagram filing github-cleanup open picture screenshot server-checkup session-closing session-opening setup skill-check; do
+    for skill in beads close diagram filing github-cleanup open picture review screenshot server-checkup session-closing session-opening setup skill-check sprite titans; do
         if [[ -L "$HOME/.claude/skills/$skill" ]]; then
             target=$(readlink "$HOME/.claude/skills/$skill")
             if [[ -d "$target" ]]; then
@@ -348,12 +348,16 @@ if [[ "$DRY_RUN" != true ]]; then
             ok "Hooks already configured"
         else
             # Merge new hook into existing structure (preserve other hooks)
+            # Use trap to clean up temp file on failure
+            trap 'rm -f "$SETTINGS_FILE.tmp"' ERR
             jq --arg hook "$HOOK_PATH" '
                 .hooks.SessionStart = ((.hooks.SessionStart // []) + [{
                     matcher: "",
                     hooks: [{type: "command", command: $hook}]
                 }])
-            ' "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp" && mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
+            ' "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp"
+            mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
+            trap - ERR
             ok "Hooks registered in settings.json"
         fi
     else
@@ -402,7 +406,7 @@ echo ""
 # Quick verification (silent unless errors)
 if [[ "$DRY_RUN" != true ]]; then
     VERIFY_ERRORS=0
-    for skill in beads close diagram filing github-cleanup open picture screenshot server-checkup session-closing session-opening setup skill-check; do
+    for skill in beads close diagram filing github-cleanup open picture review screenshot server-checkup session-closing session-opening setup skill-check sprite titans; do
         if [[ ! -L "$HOME/.claude/skills/$skill" ]] && [[ ! -d "$HOME/.claude/skills/$skill" ]]; then
             VERIFY_ERRORS=$((VERIFY_ERRORS + 1))
         fi
