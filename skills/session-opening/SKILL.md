@@ -60,15 +60,21 @@ Act           → Draw-down to TodoWrite
 
 | Condition | Action | Why |
 |-----------|--------|-----|
-| `.beads/` exists | `Skill(beads)` | Draw-down patterns, bead lifecycle |
+| `.arc/` exists (no `.beads/`) | `Skill(arc)` | Lightweight tracker patterns |
+| `.beads/` exists (no `.arc/`) | `Skill(beads)` | Full tracker patterns |
+| Both `.arc/` and `.beads/` exist | Ask user which to use | Avoid loading wrong patterns |
+| Neither exists | Skip tracker loading | No work tracker in this project |
 | @Claude items in context OR Todoist in handoff | Offer `Skill(todoist-gtd)` | GTD framing, inbox check |
 | User seems disoriented about past work | Offer `Skill(memory)` | Ancestral lookup |
 
-**Beads is mandatory when present.** The draw-down pattern (bead → TodoWrite checkpoints) is where drift gets caught. Without it, Claude works from bead directly → no checkpoints → drift compounds.
+**Work tracker is mandatory when present.** The draw-down pattern (item → TodoWrite checkpoints) is where drift gets caught. Without it, Claude works from the tracker directly → no checkpoints → drift compounds.
+
+- **Arc** is lighter — outcomes and actions, simpler CLI, GTD vocabulary built-in
+- **Beads** is heavier — epics, dependencies, molecules, more ceremony
 
 **Todoist-gtd is conditional.** Offer it when relevant, don't load by default.
 
-> **Skill loading bias (Jan 2026 learning):** Loading todoist-gtd primes Claude to think about "where work belongs" (Todoist vs bd). This caused misinterpretation when user said "refactor beads into proper epics" — Claude proposed moving to Todoist instead of organizing within bd. When todoist-gtd is loaded, stay anchored to the user's explicit tool references ("the beads", "in bd").
+> **Skill loading bias (Jan 2026 learning):** Loading todoist-gtd primes Claude to think about "where work belongs" (Todoist vs bd vs arc). This caused misinterpretation when user said "refactor beads into proper epics" — Claude proposed moving to Todoist instead of organizing within bd. When a tracker skill is loaded, stay anchored to the user's explicit tool references ("the beads", "in arc", "the outcomes").
 
 **Memory is optional.** Offer when user seems confused about history, not by default.
 
@@ -82,8 +88,9 @@ Hook output at session start shows what exists:
 ```
 📋 Handoffs: 9 available, latest 23h ago
    Index: ~/.claude/.session-context/<encoded-cwd>/handoffs.txt
-📦 Beads: 8 ready
-   Context: ~/.claude/.session-context/<encoded-cwd>/beads.txt
+📦 Beads: 8 ready                    # OR
+🎯 Arc: 4 ready                      # (one or the other, based on .beads/ vs .arc/)
+   Context: ~/.claude/.session-context/<encoded-cwd>/beads.txt (or arc.txt)
 📰 News: available
    File: ~/.claude/.update-news
 ```
@@ -97,6 +104,7 @@ Hook output at session start shows what exists:
 | Handoff index | `~/.claude/.session-context/<encoded-cwd>/handoffs.txt` |
 | Specific handoff | Path from index (e.g., `~/.claude/handoffs/.../9ac230b1.md`) |
 | Beads context | `~/.claude/.session-context/<encoded-cwd>/beads.txt` |
+| Arc context | `~/.claude/.session-context/<encoded-cwd>/arc.txt` |
 | News | `~/.claude/.update-news` |
 
 **To compute the path:** `echo "$(pwd -P)" | tr '/.' '-'` → use as subdirectory name.
@@ -139,16 +147,16 @@ CONTEXT_DIR=~/.claude/.session-context/$(pwd -P | tr '/.' '-')
 Then read:
 1. **Check handoff index** — read `$CONTEXT_DIR/handoffs.txt` (if missing, run `~/.claude/scripts/open-context.sh` first)
 2. **Read most recent handoff** — path is in the index, read the actual `.md` file
-3. **Check beads context** — read `$CONTEXT_DIR/beads.txt` for hierarchy + ready
+3. **Check tracker context** — read `$CONTEXT_DIR/beads.txt` OR `$CONTEXT_DIR/arc.txt` (whichever exists)
 4. **News if relevant** — read `~/.claude/.update-news` if user asks or it's actionable
 
 ### Synthesize What Matters
 
 - **Handoff** — Done, Next, Gotchas from previous session
-- **Beads hierarchy** — from beads.txt, show directly to user
-- **Beads ready** — what's unblocked
+- **Tracker hierarchy** — from beads.txt or arc.txt, show directly to user
+- **Ready work** — what's unblocked (beads ready or arc ready)
 - **Commands** — if handoff has a Commands section, offer to run them
-- **Scope mismatches** — if handoff "Next" doesn't match ready beads, flag it
+- **Scope mismatches** — if handoff "Next" doesn't match ready items, flag it
 
 ### Orphaned Local Handoffs
 
@@ -187,7 +195,7 @@ Read the handoff, present concisely: "Previous session did X. Next suggested: Y.
 
 User picks direction. Options typically:
 - Continue with handoff "Next"
-- Pick from ready beads
+- Pick from ready work (beads or arc items)
 - @Claude inbox items
 - Something else
 
@@ -195,23 +203,28 @@ User picks direction. Options typically:
 
 ## 5. Act: Draw-Down
 
-**Draw-down triggers on ALL substantial work, not just explicit bead claims.**
+**Draw-down triggers on ALL substantial work, not just explicit tracker item claims.**
 
-### Explicit bead selection
+### Explicit item selection
 
-When user picks a bead to work on:
+When user picks a work item:
 
-1. `bd show <bead-id> --json` — read design and acceptance criteria
-2. Create TodoWrite items from acceptance criteria
+| Tracker | Read item | Mark in progress |
+|---------|-----------|------------------|
+| **Beads** | `bd show <id> --json` | `bd update <id> --status in_progress` |
+| **Arc** | `arc show <id>` | (arc doesn't track in_progress) |
+
+Then:
+1. Read the item's criteria (beads: acceptance-criteria, arc: brief.done)
+2. Create TodoWrite items from those criteria
 3. Show user: "Breaking this down into: [list]. Sound right?"
-4. Mark bead in_progress: `bd update <id> --status in_progress`
 
 ### Continuation phrases
 
 When user says "continue X", "keep going", "pick up where we left off":
 
-1. **Clarify scope:** "Which bead? Epic nzr (broad goal) or subtask nzr.1 (specific task)?"
-2. Read the bead's acceptance criteria
+1. **Clarify scope:** "Which item? Outcome (broad goal) or action (specific task)?"
+2. Read the item's criteria
 3. Create TodoWrite items — this catches scope gaps before work begins
 4. Proceed with checkpoints
 
@@ -232,7 +245,7 @@ When user provides a spec, brief, or requirements from elsewhere:
 
 When user says "the email thing", "that feature", or similar:
 
-1. **Don't guess.** Ask: "Do you mean bead X (description) or Y (description)?"
+1. **Don't guess.** Ask: "Do you mean item X (description) or Y (description)?"
 2. Once clarified, do full draw-down
 
 ### The test
@@ -241,7 +254,7 @@ When user says "the email thing", "that feature", or similar:
 
 **No TodoWrite items = No checkpoints = Drift compounds.**
 
-**Full draw-down patterns live in the beads skill** — that's why gate-loading it matters.
+**Full draw-down patterns live in the tracker skill (beads or arc)** — that's why gate-loading matters.
 
 ---
 

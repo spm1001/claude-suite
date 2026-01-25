@@ -67,7 +67,8 @@ echo "NOW=$(date '+%Y-%m-%d %H:%M') ($TIME_OF_DAY)"
 echo "YEAR=$(date +%Y)"
 
 # --- LOCAL HANDOFF WARNING ---
-LOCAL_HANDOFFS=$(ls -1 .handoff* 2>/dev/null | wc -l | tr -d ' ')
+# find returns 0 even with no matches (unlike ls with glob), safe with pipefail
+LOCAL_HANDOFFS=$(find . -maxdepth 1 -name '.handoff*' 2>/dev/null | wc -l)
 if [ "$LOCAL_HANDOFFS" -gt 0 ]; then
     echo "⚠️  Orphaned: $LOCAL_HANDOFFS local .handoff* files (should move to ~/.claude/handoffs/)"
 fi
@@ -122,7 +123,7 @@ fi
 # --- GIT ---
 if [ -d ".git" ]; then
     DIRTY=$(git status --porcelain 2>/dev/null | grep -v -E '\.beads/|settings\.local\.json|\.update-news|\.session-context' || true)
-    DIRTY_COUNT=$(echo "$DIRTY" | grep -c . 2>/dev/null || echo 0)
+    DIRTY_COUNT=$(echo "$DIRTY" | grep -c . 2>/dev/null) || DIRTY_COUNT=0
     UNPUSHED=$(git rev-list --count @{u}..HEAD 2>/dev/null || echo "0")
 
     if [ "$DIRTY_COUNT" -gt 0 ] || [ "$UNPUSHED" -gt 0 ]; then
@@ -194,6 +195,42 @@ if [ -d ".beads" ]; then
 else
     echo "📦 Beads: none"
     rm -f "$BEADS_FILE"
+fi
+
+# --- ARC ---
+ARC_FILE="$CONTEXT_DIR/arc.txt"
+if [ -d ".arc" ]; then
+    # Find arc CLI - check PATH first, then known location
+    ARC_CMD=$(command -v arc 2>/dev/null || echo "$HOME/Repos/arc/.venv/bin/arc")
+
+    if [ -x "$ARC_CMD" ]; then
+        # Get ready items
+        READY_OUTPUT=$("$ARC_CMD" list --ready 2>/dev/null || true)
+        READY_COUNT=$(echo "$READY_OUTPUT" | grep -c "^" 2>/dev/null) || READY_COUNT=0
+        # Subtract header/empty lines if present
+        [ "$READY_COUNT" -gt 0 ] && READY_COUNT=$((READY_COUNT - 1))
+        [ "$READY_COUNT" -lt 0 ] && READY_COUNT=0
+
+        # Write arc context to file
+        {
+            echo "# Arc Context (generated $(date '+%Y-%m-%d %H:%M'))"
+            echo "# Generated for: $CWD"
+            echo ""
+            echo "## Ready Work"
+            echo "$READY_OUTPUT"
+            echo ""
+            echo "## Full Hierarchy"
+            "$ARC_CMD" list 2>/dev/null || true
+        } > "$ARC_FILE"
+
+        echo "🎯 Arc: $READY_COUNT ready"
+        echo "   Context: $ARC_FILE"
+    else
+        echo "🎯 Arc: .arc/ exists but arc CLI not found"
+        rm -f "$ARC_FILE"
+    fi
+else
+    rm -f "$ARC_FILE"
 fi
 
 # --- NEWS ---
