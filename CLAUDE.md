@@ -123,7 +123,37 @@ Skills can have a `references/` subdirectory:
 
 Run `./install.sh --verify` to check all skills are properly symlinked. The verification list must be kept in sync with actual skills in `skills/` directory.
 
-**Current skills (16):** beads, close, diagram, filing, github-cleanup, open, picture, review, screenshot, server-checkup, session-closing, session-opening, setup, skill-check, sprite, titans
+**Current skills (18):** beads, close, diagram, filing, github-cleanup, ia-presenter, open, picture, review, screenshot, server-checkup, session-closing, session-opening, setup, skill-check, skill-forge, sprite, titans
+
+## Testing Skills
+
+**The honest split:** Skill quality has two parts — mechanical checks (automatable) and semantic judgment (requires LLM).
+
+### Mechanical (pytest)
+
+```bash
+uv run pytest           # All tests
+uv run pytest -x        # Stop on first failure
+uv run pytest -k beads  # Single skill
+```
+
+Tests check:
+- CSO linter pass + 100/100 score
+- Referenced files in `references/` exist
+- Scripts executable with shebang
+- Anti-patterns table format consistency
+
+### Semantic (titans)
+
+For "does this skill actually make sense?" — use `/titans` or `/review`. Three Opus reviewers catch:
+- Description/frontmatter contradictions
+- Stale references
+- Missing error handling
+- Semantic issues the linter can't see
+
+**When to use what:**
+- After modifying skills → `uv run pytest` (fast, catches regressions)
+- Before shipping substantial skill work → `/titans` (thorough, catches judgment issues)
 
 ## Script Error Handling
 

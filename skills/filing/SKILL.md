@@ -310,8 +310,7 @@ When triaging files, follow this 5-step process:
 
 4. **Capture** - Outstanding actions → Todoist
    - **Before adding:** Search for existing/completed tasks to avoid duplicates
-   - Use todoist-gtd CLI: `scripts/todoist.py filter "search query"`
-   - Create tasks via CLI: `scripts/todoist.py add "task" --project-id <id>`
+   - Use todoist-gtd skill (invoke with `Skill(todoist-gtd)`) for Todoist operations
    - Link description to filed document
 
 5. **File** - Move to correct location (or delete)
@@ -350,13 +349,7 @@ When filing a document that needs to live in a Project:
 
 ### Todoist task linking
 
-When a filed document relates to a Todoist task:
-
-1. Search for task: `scripts/todoist.py filter "task name"`
-2. Get task details: `scripts/todoist.py task <task-id>`
-3. Update via Todoist app or API (CLI update coming)
-
-**Pattern:** Canonical document location should be in Todoist task description.
+When a filed document relates to a Todoist task, use the todoist-gtd skill to search and link. Canonical document location should be in Todoist task description.
 
 ## Weekly Review Integration
 

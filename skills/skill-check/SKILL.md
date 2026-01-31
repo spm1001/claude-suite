@@ -14,8 +14,7 @@ Validate skill quality before deployment. **Complements skill-creator** (Anthrop
 
 **skill-creator** (Anthropic) = **PROCESS**
 - 6-step workflow: understand → plan → init → edit → package → iterate
-- Provides `scripts/init_skill.py` for generating template
-- Provides `scripts/package_skill.py` for validation and distribution
+- Template generation and packaging utilities
 - Progressive disclosure principle
 
 **skill-quality-gate** (this skill) = **VALIDATION**
@@ -192,7 +191,7 @@ Before considering a skill complete, validate ALL items:
 ## Integration with Other Skills
 
 **This skill complements:**
-- **skill-creator** - Anthropic's process (use for init_skill.py, package_skill.py)
+- **skill-creator** - Anthropic's process (template generation, packaging)
 - **verification-before-completion** - Validate after skill-creator steps
 
 **How to reference in your skill:**
@@ -293,7 +292,7 @@ description: [TIMING] + [TRIGGER] + [METHOD/VALUE]. Specific phrases: 'phrase1',
 | references/*.md | Detailed guides | When >500 lines |
 | scripts/*.py | Utility scripts | When deterministic code needed |
 
-Use skill-creator's `init_skill.py` to generate this structure automatically.
+Use skill-creator to generate this structure automatically.
 
 ## Before Sharing
 
