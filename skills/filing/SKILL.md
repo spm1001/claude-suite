@@ -1,26 +1,25 @@
 ---
 name: filing
 user-invocable: false
-description: File organization and weekly cleanup - where things belong (PARA-influenced structure) and where clutter accumulates (Downloads, Desktop, iCloud, iA Writer, Drive inbox, Work folder root). Triggers on 'where should this go', 'help me tidy', 'clean up downloads', 'clean up desktop', 'triage inbox', 'file this', 'personal documents', 'team shared drive', 'archive or reference', 'convert to google doc', or during weekly review cleanup. (user)
+description: File organization and weekly cleanup. Use when user asks 'where should this go', 'help me tidy', 'clean up downloads', 'clean up desktop', 'triage inbox', during weekly review cleanup, or when moving files between zones. (user)
 ---
 
 # Filing
 
 Help with file organization: where things belong and keeping inboxes clear.
 
-## When to Use This Skill
+## When to Use
 
-**Use when:**
 - "Where should this file go?"
-- "Help me tidy up"
-- "Clean up downloads"
 - Weekly review (filing portion)
 - Moving files between zones
 - Deciding Projects vs Areas vs Resources
 
-**NOT for:**
-- Pattern reflection (use todoist-gtd — it handles weekly review Phase 3)
+## When NOT to Use
+
+- Pattern reflection (use todoist-gtd)
 - Todoist organization (use todoist-gtd)
+- Code/repo organization (different rules apply)
 
 ## Work Folder Structure
 
@@ -79,7 +78,7 @@ Meeting Notes/
 Naming: `{date} {Person/Topic} - {Brief description}.md`
 
 ### Claude Research/
-Session working folders created by workspace MCP's `gather_context`:
+Session working folders for research context:
 ```
 Claude Research/
 ├── 20251214 - Claude - strategic priorities/
@@ -346,7 +345,7 @@ When filing a document that needs to live in a Project:
 
 1. Read content (use docx skill for Word docs)
 2. Create Project folder if needed: `{Area} - {Outcome statement}`
-3. Convert to Google Doc: `mcp__workspace__create_doc_from_markdown`
+3. Convert to Google Doc: `mcp__mise__create`
 4. Delete original file
 5. Update any Todoist task that references it with new link
 
@@ -378,6 +377,15 @@ During weekly review, check all 9 cleanup zones:
 7. **My Drive Temp** - Delete everything (Claude staging folder)
 8. **Work Inbox** - Triage subfolders (Voice Transcripts, Meeting Notes, Quick Notes)
 9. **JPR Voice** - Transcribe new recordings, review transcripts
+
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Skip zones during weekly review | Clutter accumulates | Check ALL 9 zones explicitly |
+| Keep "just in case" | Folders bloat | Delete liberally, most things don't need keeping |
+| File without renaming | Untitled docs pile up | Rename to content-descriptive name first |
+| Skip Todoist search before adding | Duplicate tasks | Always search for existing task first |
 
 ## Remember
 
