@@ -1,0 +1,251 @@
+---
+name: ia-presenter
+description: Writes and validates iA Presenter markdown where tab-indentation controls slide visibility. Triggers on 'presentation', 'iA Presenter', 'slides from markdown', '.presenter file', or when working in iCloud~net~ia~presenter folder. Validates tab characters (not spaces) for visible text, --- slide separators, and image metadata syntax. (user)
+---
+
+# iA Presenter Markdown
+
+Write and edit markdown files for iA Presenter, which generates beautiful slides from plain text.
+
+## The Core Insight: Visible vs Speaker Notes
+
+iA Presenter's key innovation is separating **what the audience sees** from **what you say** (speaker notes/teleprompter). This is controlled by indentation:
+
+| Element | Visibility | How to Write |
+|---------|------------|--------------|
+| Headings | ALWAYS visible | `#`, `##`, `###` at line start |
+| Tab-indented text | Visible on slide | `⇥Text here` (literal tab character) |
+| Plain paragraphs | Speaker notes only | No indent — audience never sees this |
+| Images/videos/tables | Visible by default | URL or path on its own line |
+| Lists | Visible only if tabbed | `⇥1. Item` or `⇥- Item` |
+
+**The tab character is load-bearing.** A leading tab makes body text visible to the audience. Without it, the text becomes speaker notes (shown in teleprompter, hidden from audience).
+
+## When to Use
+
+- Creating new presentations in iA Presenter format
+- Editing existing `.presenter` or `.md` files for iA Presenter
+- Validating that markdown will render correctly as slides
+- Converting standard markdown to iA Presenter format
+- Working in the `iCloud~net~ia~presenter` folder
+
+## When NOT to Use
+
+- Standard markdown files (no iA Presenter involvement)
+- PowerPoint or Google Slides (use pptx skill instead)
+- Reveal.js, Marp, or other slide frameworks (different syntax)
+- HTML/CSS slide decks
+
+## Slide Structure
+
+### Slide Separation
+```markdown
+Content for slide 1
+
+---
+
+Content for slide 2
+```
+Three dashes (`---`) on their own line create a new slide.
+
+### Heading Hierarchy
+```markdown
+# Title Slide Heading (H1 - largest)
+## Section Heading (H2 - major sections)
+### Content Heading (H3 - within slides)
+```
+
+Headings are ALWAYS visible. Use them for the key message the audience must see.
+
+### Basic Slide Pattern
+```markdown
+### Visible Heading
+	Visible subtitle or key point (TAB-indented)
+
+Speaker notes go here without indentation. The audience never sees this.
+You can write as much context as you need for yourself.
+
+---
+```
+
+## Text Visibility Examples
+
+### Title Slide
+```markdown
+	Fast and Focused
+# Main Title
+	Subtitle line
+
+This introductory paragraph is speaker notes - invisible to audience.
+```
+Result: Three visible lines stacked (subtitle, title, subtitle), with speaker notes in teleprompter.
+
+### Content Slide
+```markdown
+### The Key Point
+	The heart of a great presentation is the message. Get the script right before anything else.
+
+Most presentation tools ask you to choose a design first. iA Presenter flips the process. You focus on what matters: your story.
+```
+Result: Heading + one visible paragraph. The longer explanation is speaker notes.
+
+### Multi-Column Layout
+```markdown
+### Column One
+	Description for the first column goes here.
+
+### Column Two
+	Description for the second column goes here.
+
+Speaker notes for this slide.
+```
+Result: Auto-arranges as two columns side-by-side.
+
+### Visible Lists
+```markdown
+### Table of Contents
+	1. Write
+	2. Structure
+	3. Iterate
+	4. Design
+	5. Action
+
+The numbered list above is visible because each line is tab-indented.
+```
+
+## Images
+
+### Basic Image
+```markdown
+https://example.com/image.jpg
+
+Or a local path:
+/Theme/image.webp
+```
+Images are visible by default. Just put the URL or path on its own line.
+
+### Image with Metadata
+```markdown
+https://example.com/screenshot.png
+x: left
+y: top
+title: "Caption text"
+```
+
+Available metadata:
+- `x:` — horizontal position: `left`, `center`, `right`
+- `y:` — vertical position: `top`, `center`, `bottom`
+- `size:` — sizing: `contain`, `cover`, `fill`
+- `title:` — caption text (in quotes)
+
+### Multiple Images (Grid)
+```markdown
+https://example.com/image1.jpg
+
+https://example.com/image2.jpg
+
+https://example.com/image3.jpg
+
+https://example.com/image4.jpg
+
+These images auto-arrange into a grid layout.
+```
+
+### Image + Text Layout
+```markdown
+### Heading on Left
+	Visible description text that appears alongside the image.
+
+https://example.com/image.png
+x: right
+y: top
+
+Speaker notes explaining what we're showing.
+```
+Result: Text on left, image on right.
+
+## Inline Formatting
+
+Standard markdown formatting works:
+- `**bold**` — **bold** (works in visible and speaker text)
+- `*italic*` — *italic*
+- `[link text](url)` — hyperlinks
+- `` `code` `` — inline code
+
+## Common Patterns
+
+### Section Divider
+```markdown
+## 1. Write
+	Start With a Script
+
+Brief visible tagline. Then your speaker notes expand on it below.
+
+---
+```
+
+### Quote/Callout Slide
+```markdown
+	**Key insight in bold.** Additional visible context that supports the main point.
+
+The rest of your speaking notes. Expand, give examples, tell stories.
+```
+
+### Closing Slide
+```markdown
+## Now go and move mountains.
+
+Final thoughts in speaker notes. Link to resources: [How-To](https://ia.net/presenter/how-to)
+```
+
+## Validation Checklist
+
+When reviewing iA Presenter markdown:
+
+1. **Tab characters exist** — Visible body text MUST start with a literal tab (not spaces)
+2. **Slides are separated** — `---` between each slide
+3. **One idea per slide** — Keep slides focused
+4. **Headings are concise** — They're always visible; make them count
+5. **Speaker notes are useful** — Don't waste the teleprompter space
+6. **Images have paths** — URLs or local paths on their own lines
+
+## Common Mistakes
+
+| Mistake | Problem | Fix |
+|---------|---------|-----|
+| Spaces instead of tabs | Text won't be visible | Use literal tab character |
+| Too much visible text | Stuffed slides bore audiences | Move detail to speaker notes |
+| Missing `---` | Slides won't separate | Add `---` between slides |
+| Forgetting speaker notes | Wasting the teleprompter | Add context below visible content |
+
+## Generating New Presentations
+
+When creating iA Presenter markdown from scratch:
+
+1. **Start with the story** — Write the narrative first
+2. **Identify key points** — These become headings
+3. **Decide what audience sees** — Tab-indent only essential text
+4. **Add speaker notes** — Context, examples, transitions
+5. **Add images last** — URLs/paths with positioning metadata
+6. **Review slide count** — `---` separators should match intended slides
+
+## Example: Complete Slide
+
+```markdown
+### Tell Your Story
+	The heart of a great presentation is the message. Get the script right before anything else.
+
+Most presentation tools ask you to choose a design and then adjust your story to fit it. iA Presenter flips the process.
+
+Start with what you want to say. The design comes later, and it adapts to your content — not the other way around.
+
+---
+```
+
+**Visible to audience:**
+- "Tell Your Story" (heading)
+- "The heart of a great presentation..." (tab-indented paragraph)
+
+**Speaker notes (teleprompter only):**
+- "Most presentation tools ask you to choose..."
+- "Start with what you want to say..."
