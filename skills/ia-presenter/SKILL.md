@@ -27,6 +27,34 @@ iA Presenter's key innovation is separating **what the audience sees** from **wh
 
 **The tab character is load-bearing.** A leading tab makes body text visible to the audience. Without it, the text becomes speaker notes (shown in teleprompter, hidden from audience).
 
+## File Format
+
+iA Presenter uses `.iapresenter` bundles (directories), not plain `.md` files:
+
+```
+MyPresentation.iapresenter/
+├── assets/          # Images, media (optional)
+├── info.json        # Metadata
+└── text.md          # The markdown content
+```
+
+**info.json template:**
+```json
+{
+  "creatorIdentifier" : "net.ia.presenter",
+  "net.ia.presenter" : {},
+  "transient" : false,
+  "type" : "net.daringfireball.markdown",
+  "version" : 2
+}
+```
+
+To create a new presentation programmatically:
+1. Create `MyPresentation.iapresenter/` directory
+2. Create `assets/` subdirectory (can be empty)
+3. Create `info.json` with the template above
+4. Create `text.md` with your markdown content
+
 ## When to Use
 
 - Creating new presentations in iA Presenter format
