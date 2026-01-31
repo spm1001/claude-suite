@@ -17,9 +17,7 @@ beads has extensive reference material. To avoid reading all files:
 - Troubleshooting → `references/TROUBLESHOOTING.md`
 - Design context capture → `references/WORKFLOWS.md` (Design Context section)
 - Resumability after compaction → `references/RESUMABILITY.md`
-- **Molecules, wisps, protos** → `references/MOLECULES.md` (v0.34.0+)
-- **Formulas, gates, activity** → `references/MOLECULES.md` (v0.36.0+)
-- **Cross-project dependencies** → `references/MOLECULES.md` (v0.34.0+)
+- **Molecules, wisps, protos, formulas** → `references/MOLECULES.md` (v0.34.0+)
 - **Portfolio view (cross-project)** → See `references/PORTFOLIO.md`
 - **Database hygiene / archiving** → "Database Hygiene" section in this file
 - **Dangerous commands** → "Dangerous Commands" section in this file
@@ -36,24 +34,21 @@ bd is a graph-based issue tracker for persistent memory across sessions, designe
 
 **Interface:** CLI via Bash tool (bd commands). All operations return JSON with `--json` flag for structured parsing.
 
-## When to Use bd vs TodoWrite
+## When to Use
 
-### Use bd when:
-- **Multi-session work** - Tasks spanning multiple compaction cycles or days
-- **Complex dependencies** - Work with blockers, prerequisites, or hierarchical structure
-- **Knowledge work** - Strategic documents, research, or tasks with fuzzy boundaries
-- **Side quests** - Exploratory work that might pause the main task
-- **Project memory** - Need to resume work after weeks away with full context
+- **Multi-session work** — tasks spanning days or compaction cycles
+- **Complex dependencies** — work with blockers or hierarchical structure
+- **Project memory** — need to resume after weeks with full context
 
-### Use TodoWrite when:
-- **Single-session tasks** - Work that completes within current session
-- **Linear execution** - Straightforward step-by-step tasks with no branching
-- **Immediate context** - All information already in conversation
-- **Simple tracking** - Just need a checklist to show progress
+## When NOT to Use
 
-**Key insight**: If resuming work after 2 weeks would be difficult without bd, use bd. If the work can be picked up from a markdown skim, TodoWrite is sufficient.
+- **Single-session tasks** — use TodoWrite instead
+- **Linear execution** — straightforward step-by-step, no branching
+- **Cloud-synced folders** — SQLite + Google Drive/Dropbox = corruption
 
-**For detailed decision criteria and examples:** [references/BOUNDARIES.md](references/BOUNDARIES.md)
+**Test:** If resuming after 2 weeks would be difficult without bd, use bd.
+
+**For detailed decision criteria:** [references/BOUNDARIES.md](references/BOUNDARIES.md)
 
 ## Session Start Protocol
 
@@ -176,79 +171,17 @@ Standalone:
 
 **Key principle:** Present work as goals with cascading actions, not flat ticket lists.
 
-## Database Hygiene (Yegge Best Practices)
+## Database Hygiene
 
-**Keep your database small.** Performance degrades with large issue counts (agents search issues.jsonl directly).
-
-```bash
-# Delete closed issues older than N days
-bd cleanup --older-than 7 --cascade --force   # Standard cleanup
-bd cleanup --older-than 2 --cascade --force   # Aggressive if moving fast
-
-# Run periodically
-bd doctor               # Check for issues
-bd doctor --fix         # Auto-fix problems
-
-# Prune old tombstones (summaries of deleted issues)
-bd compact --prune --older-than 30
-```
-
-**Target sizes:**
-- ⚠️ >200 issues: Consider cleanup or archiving
-- 🛑 >500 issues: Performance problems likely
-- Deleted issues remain in git history - always recoverable
-
-**Upgrade regularly:** `bd upgrade` (at least weekly). Bug fixes are frequent.
-
-### Archive Pattern (Preserve History)
-
-When a repo's beads grow large, archive closed issues before deleting:
+**Keep databases small.** Performance degrades with >200 issues.
 
 ```bash
-# 1. Export closed issues to dated archive file
-mkdir -p ~/.beads-archive
-bd list --status closed --json | jq -c '.[]' >> ~/.beads-archive/$(date +%Y-%m)-$(basename $PWD).jsonl
-
-# 2. Delete closed issues
-bd list --status closed --json | jq -r '.[].id' | xargs -I {} bd delete {} --force
-
-# 3. Export clean state
-bd export -o .beads/issues.jsonl --force
-git add .beads/issues.jsonl && git commit -m "Archive closed issues"
+bd cleanup --older-than 7 --cascade --force   # Delete old closed issues
+bd doctor --fix                               # Auto-fix problems
+bd upgrade                                    # Keep bd current (weekly)
 ```
 
-**Archive location:** `~/.beads-archive/` — JSONL files by month and repo, searchable with grep/jq.
-
-**Searching archives:**
-```bash
-grep "issue-id" ~/.beads-archive/*.jsonl
-jq -r 'select(.title | test("keyword"; "i")) | "\(.id): \(.title)"' ~/.beads-archive/*.jsonl
-```
-
-### Monthly Maintenance Routine
-
-Run monthly to keep beads healthy across all repos:
-
-```bash
-# 1. Portfolio view — see what's active
-~/.claude/scripts/beads-portfolio.sh
-
-# 2. For each active repo, sync JSONL with DB
-for repo in ~/Repos/*/.beads; do
-  cd "$(dirname "$repo")"
-  bd export -o .beads/issues.jsonl --force 2>/dev/null
-  git add .beads/issues.jsonl 2>/dev/null
-done
-
-# 3. Commit any changes
-cd ~/Repos && for d in *; do
-  [ -d "$d/.beads" ] && cd "$d" && git diff --quiet .beads/issues.jsonl || \
-    git commit -m "Sync beads JSONL with database" .beads/issues.jsonl 2>/dev/null
-  cd ~/Repos
-done
-```
-
-**Why this matters:** The database (`.db`) and JSONL can drift. Periodic export ensures JSONL (which is git-tracked and backed up) matches the database.
+**For archive patterns and monthly maintenance:** [references/CLI_BOOTSTRAP_ADMIN.md](references/CLI_BOOTSTRAP_ADMIN.md)
 
 ## Dangerous Commands — Avoid
 
@@ -291,60 +224,9 @@ git add .beads/issues.jsonl && git commit -m "Remove issue PREFIX-xxx"
 
 ## Field Reports (Claude-to-Claude)
 
-Field Reports are a distinct bead genre for Claude-to-Claude knowledge transfer — observations, friction points, learnings filed by one Claude for future Claudes to find.
+Field Reports capture observations and friction points for future Claudes. Use `--label field-report` and don't close them — they persist as institutional memory.
 
-### What Makes Field Reports Different
-
-| Aspect | Work Item | Field Report |
-|--------|-----------|--------------|
-| **Intent** | "Do X" | "I observed Y" |
-| **Author** | Human or Claude | Claude (specifically) |
-| **Audience** | Next Claude working on it | Future Claudes generally |
-| **Lifecycle** | Open → Done → Closed | Filed → Persists as knowledge |
-| **Voice** | Task description | Observational judgement |
-
-### When to File
-
-- Friction with a tool or API that others will hit
-- Mental model mismatch ("expected X, got Y, here's what I think that means")
-- Workarounds discovered during implementation
-- Patterns that worked well (or didn't)
-- Ergonomic observations about skills or workflows
-
-### Template
-
-```bash
-bd create "Field Report: [brief observation]" \
-  --type task \
-  --label field-report \
-  --description "[What I noticed — dense, Claude-to-Claude style]" \
-  --design "$(cat <<'EOF'
-## Context
-[What I was trying to do]
-
-## Observation
-[What happened, with judgement — not just facts]
-
-## Suggestion
-[What might help future Claudes]
-EOF
-)"
-```
-
-### Lifecycle
-
-**Don't close field reports** — they persist as institutional memory.
-
-**Review periodically:**
-- Extract patterns → update skills
-- Close only if fully addressed (rare)
-- Promote to actionable work if needed
-
-### Why "Field Report" Not "Bug Ticket"
-
-LLMs are judgement machines. A field report expresses a considered view: "this felt harder than it should", "the mental model didn't match the API". That's qualitatively different from mechanical steps-to-reproduce.
-
-The voice is dense and efficient — Claude briefing Claude, not Claude filing a ticket.
+**For template and lifecycle:** [references/PATTERNS.md](references/PATTERNS.md)
 
 ## Core CLI Operations
 
@@ -561,179 +443,37 @@ bd close .claude-ftz --reason "Fixed container detection"
 
 ## Issue Creation Guidelines
 
-**Quick guidelines:**
-- Ask user first for knowledge work with fuzzy boundaries
-- Create directly for clear bugs, technical debt, or discovered work
-- Use clear titles, sufficient context in descriptions
-- Design field: HOW to build (can change during implementation)
+- Design field: HOW to build (can change)
 - Acceptance criteria: WHAT success looks like (should remain stable)
-
-**Self-check for acceptance criteria:**
-
-❓ "If I changed the implementation approach, would these criteria still apply?"
-- → **Yes** = Good criteria (outcome-focused)
-- → **No** = Move to design field (implementation-focused)
-
-**Standard design field structure:**
-
-```bash
-bd create "Title" --design "$(cat <<'EOF'
-## Approach
-[How you'll build this]
-
-## Workflow
-1. DRAW-DOWN: Create TodoWrite items from acceptance criteria
-2. Work through items, check direction at each completion
-3. Update notes at milestones
-EOF
-)"
-```
-
-Every new bead should include the Workflow section. When you `bd show` later, the reminder is right there in the output. Self-documenting enforcement.
+- **Test:** "If I changed the approach, would criteria still apply?" Yes → good criteria.
 
 **For detailed creation guidance:** [references/ISSUE_CREATION.md](references/ISSUE_CREATION.md)
 
-## Error Recovery
+## Error Recovery & Troubleshooting
 
-**Wrong Dependency Created:**
 ```bash
-# Remove wrong dependency
-bd dep remove A B
-
-# Create correct dependency (B depends on A)
-bd dep add B A
-
-# Verify
-bd show B  # Should show "Dependencies: A"
+bd dep remove A B && bd dep add B A   # Fix wrong dependency
+bd reopen <id> --reason "..."         # Reopen closed issue
+bd delete <id> --force                # Remove duplicate
+bd stats --json                       # Project health
 ```
 
-**Closed Issue Prematurely:**
-```bash
-# Reopen the issue
-bd reopen <issue-id> --reason "Need to add error handling"
+**For detailed recovery patterns:** [references/TROUBLESHOOTING.md](references/TROUBLESHOOTING.md)
 
-# Issue returns to 'open' status
-```
+## Database Selection & Cross-Project
 
-**Duplicate Issues:**
-```bash
-# Preview deletion
-bd delete <issue-dup>
+- **Project-local** (`.beads/` in project) is used automatically
+- **Cross-project writes:** Always `cd ~/Repos/X && bd command` (never use `--db` for writes)
+- **Portfolio view:** `~/.claude/scripts/beads-portfolio.sh` (read-only aggregation)
 
-# Force delete if safe
-bd delete <issue-dup> --force
+**For detailed patterns:** [references/PORTFOLIO.md](references/PORTFOLIO.md)
 
-# If duplicate has dependencies, reassign first
-bd dep remove dependent issue-dup
-bd dep add dependent issue-kept
-bd delete issue-dup --force
-```
-
-### Database Recovery
-
-If a repo's beads are corrupted (wrong prefixes, duplicate issues), see [references/TROUBLESHOOTING.md](references/TROUBLESHOOTING.md) for recovery patterns.
-
-## Statistics and Monitoring
+## Bootstrap
 
 ```bash
-# Project health overview
-bd stats --json
-
-# Find blocked work
-bd blocked --json
-
-# Check daemon status
-bd daemon --status
-```
-
-Use stats to report progress, identify bottlenecks, and understand project velocity.
-
-## Troubleshooting
-
-**For comprehensive troubleshooting guide:** [references/TROUBLESHOOTING.md](references/TROUBLESHOOTING.md)
-
-**Common issues:**
-- Dependencies not persisting → Check bd version (need v0.15.0+)
-- Status updates delayed → Daemon sync timing (3-5s delay expected)
-- Daemon won't start → Git repository required
-- Cloud storage errors → SQLite incompatible with Google Drive/Dropbox
-
-## Database Selection
-
-bd automatically selects the appropriate database:
-- **Project-local** (`.beads/` in project): Used for project-specific work
-- **Global fallback** (`~/.beads/`): Used when no project-local database exists
-
-**Use --db flag explicitly when:**
-- Accessing a specific database outside current directory
-- Working with multiple databases (e.g., project database + reference database)
-
-**Cross-project writes (Claude coordination):**
-To modify another project's beads, `cd` to that repo first. This ensures you're working with the correct database and prefix.
-
-```bash
-# To file/modify beads in another repo:
-cd ~/Repos/other-project && bd create "Issue discovered while working elsewhere" -p 1
-
-# To reorganize another repo's beads:
-cd ~/Repos/itv-slides-formatter && bd update itv-slides-formatter-x9d --parent itv-slides-formatter-bzd
-```
-
-**Why cd, not --db?** The `--db` flag is error-prone for writes — wrong paths, wrong prefixes, pollution. Being "in" the repo makes the target explicit. Use `--db` only for read-only queries.
-
-**Note:** Working directory doesn't persist between Bash calls, so always chain: `cd ~/Repos/X && bd command`
-
-**Moving issues between repos:**
-Issues can't truly "move" — the prefix IS the identity. When relocating an issue:
-
-1. Create new issue in target repo
-2. Add "(Moved from old-id)" to the description
-3. Delete old issue
-
-That's it. No alias files, no infrastructure. Just a note in the description so future Claudes can trace lineage.
-
-## Portfolio View (Cross-Project)
-
-To see all beads across repos, use the portfolio script:
-
-```bash
-~/.claude/scripts/beads-portfolio.sh
-```
-
-This reads from all repos and displays a unified view. **It never writes** — just aggregates for visibility.
-
-**Key principle: Per-repo databases are authoritative.**
-- Each repo's `.beads/` is the source of truth
-- No sync between repos (sync caused corruption)
-- Portfolio script reads on-demand, not continuously
-
-**To modify beads:** Always `cd` to the target repo first:
-```bash
-cd ~/Repos/itv-slides-formatter && bd update ...   # Correct
-bd --db ~/Repos/itv-slides-formatter/...           # Avoid for writes
-```
-
-**Cross-project visibility without cross-project sync:**
-- Portfolio shows what's ready across all projects
-- You pick which project to focus on
-- Work happens in that project's database only
-
-## Bootstrap and Initialization
-
-**Use short prefixes** (2-3 chars): `bd-`, `vc-`, `wy-`. Makes everything more readable.
-
-```bash
-# Initialize new project (auto-detects prefix from folder name)
-bd init
-
-# Initialize with explicit short prefix
-bd init --prefix wy
-
-# Install git hooks for auto-sync
-bd hooks install
-
-# Start daemon (auto-starts on first command)
-bd daemon
+bd init --prefix wy       # Use short 2-3 char prefix
+bd hooks install          # Git hooks for auto-sync
+bd daemon                 # Start daemon (usually auto-starts)
 
 # Compact old closed issues
 bd compact --all
@@ -741,33 +481,19 @@ bd compact --all
 
 **For complete bootstrap guide:** [references/CLI_BOOTSTRAP_ADMIN.md](references/CLI_BOOTSTRAP_ADMIN.md)
 
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Skip draw-down | Drift compounds, scope gaps | Always create TodoWrite from acceptance criteria |
+| Work from bead directly | No checkpoints | Break into TodoWrite items first |
+| Use `--db` for writes | Wrong prefix, pollution | `cd` to target repo instead |
+| Beads in cloud folders | SQLite corruption | Use ~/Repos only |
+
 ## Common Patterns
-
-**Quick patterns for typical scenarios:**
-
-- **Knowledge work:** Read bd notes → create TodoWrite → work → update notes at milestones
-- **Side quests:** Create issue immediately, link with discovered-from, assess blocker vs defer
-- **Multi-session resume:** `bd ready` → `bd show` → read notes → begin work
-- **Compaction recovery:** Read notes field to reconstruct full context
-- **Status transitions:** open → in_progress → blocked/closed as appropriate
 
 **For detailed pattern examples:** [references/PATTERNS.md](references/PATTERNS.md)
 
 ## Reference Files
 
-Detailed information organized by topic:
-
-| Reference | Read When |
-|-----------|-----------|
-| [TROUBLESHOOTING.md](references/TROUBLESHOOTING.md) | **Encountering errors** - dependencies not saving, sync delays, daemon issues |
-| [WORKFLOWS.md](references/WORKFLOWS.md) | Need step-by-step workflows with checklists for common scenarios |
-| [DEPENDENCIES.md](references/DEPENDENCIES.md) | Need deep understanding of dependency types or relationship patterns |
-| [BOUNDARIES.md](references/BOUNDARIES.md) | Need detailed decision criteria for bd vs TodoWrite |
-| [PATTERNS.md](references/PATTERNS.md) | Need detailed examples of common patterns and status transitions |
-| [INTEGRATION_PATTERNS.md](references/INTEGRATION_PATTERNS.md) | Need integration with TodoWrite or writing-plans |
-| [ISSUE_CREATION.md](references/ISSUE_CREATION.md) | Need guidance on when to ask vs create issues, issue quality |
-| [CLI_BOOTSTRAP_ADMIN.md](references/CLI_BOOTSTRAP_ADMIN.md) | Need CLI commands for bootstrap or admin operations |
-| [RESUMABILITY.md](references/RESUMABILITY.md) | Need patterns for writing resumable notes |
-| [STATIC_DATA.md](references/STATIC_DATA.md) | Want to use bd for reference databases instead of work tracking |
-| [MOLECULES.md](references/MOLECULES.md) | **Reusable templates** - protos, mols, wisps, cross-project deps (v0.34.0+) |
-| [PORTFOLIO.md](references/PORTFOLIO.md) | **Cross-project view** - see all beads across repos, triage, audit skeleton beads |
+See **Quick Index** at top of this file for when to read each reference.

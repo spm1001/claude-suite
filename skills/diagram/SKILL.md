@@ -1,7 +1,7 @@
 ---
 name: diagram
 user-invocable: false
-description: Create diagrams and visual explanations with iterative render-and-check workflow. Use when asked to create Venn diagrams, architecture diagrams, flow charts, data charts, or any conceptual visual. Renders SVG to PNG, self-critiques using CRAP principles, iterates until right. Composes with brand skills (e.g., itv-brand) for styling. (user)
+description: Create diagrams and visual explanations with iterative render-and-check workflow. Use when asked to 'create a diagram', 'Venn diagram', 'flow chart', 'architecture diagram', 'visualize this'. Renders SVG to PNG, self-critiques using CRAP principles, iterates until right. Composes with brand skills for styling. (user)
 ---
 
 # Diagramming
@@ -13,9 +13,12 @@ Create conceptual charts and diagrams as SVG, render to PNG, self-critique, iter
 - Conceptual diagrams (Venn, flow, architecture)
 - Data charts (line, bar, area)
 - Visual explanations for slides or documents
-- Any request for a rendered visual
 
-**Overlap with image-generation:** For visuals where precise data or editability matters, use diagramming. For striking hero images or photorealistic/illustrative content, consider `image-generation` skill instead. The boundary is fuzzy — use judgement.
+## When NOT to Use
+
+- Hero images or photorealistic content (use picture skill)
+- Simple text formatting (markdown suffices)
+- Screenshots or screen mockups (different tools)
 
 ## Workflow
 
@@ -232,6 +235,15 @@ When a brand skill exists:
 3. Brand skill may specify different canvas size
 
 Example: For ITV-branded charts, also invoke the `itv-styling` skill.
+
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Skip self-critique | Quality issues persist | Always render and check before showing user |
+| Low contrast text | Illegible on projection | White/near-white on dark, test at 50% zoom |
+| Crowded layouts | Visual overload | Use CRAP principles, leave breathing room |
+| Skip brand check | Inconsistent styling | Load brand skill first when brand applies |
 
 ## References
 

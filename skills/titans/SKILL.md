@@ -16,9 +16,13 @@ Three reviewers, three lenses. Dispatch in parallel, synthesize findings.
 - **After substantial work** — Before /close, when a feature/fix/refactor is "done"
 - **Before shipping** — Final quality gate
 - **Periodic hygiene** — "What's rotting that I haven't noticed?"
-- **After context switch** — Fresh eyes on code you haven't touched in a while
 
-**Not for:** Quick fixes under 50 lines, exploratory spikes, throwaway scripts (unless they stopped being throwaway).
+## When NOT to Use
+
+- Quick fixes under 50 lines
+- Exploratory spikes
+- Throwaway scripts (unless they stopped being throwaway)
+- When you need speed over thoroughness
 
 ## Beyond Code Review
 
@@ -185,6 +189,15 @@ From test runs, reviewers tend to use tokens in this order:
 - **Prometheus** uses the least — architectural assessment from less code
 
 This varies by codebase size and scope clarity. If a reviewer seems to be looping, it usually indicates unclear scope — consider interrupting and re-scoping rather than waiting it out.
+
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Vague scope | Reviewers loop, miss focus | Explicit file list or "changes since X" |
+| Skip synthesis | Three reports, no action | Always synthesize findings |
+| Ignore partial failures | Miss perspectives | Report which reviewer failed, proceed with others |
+| Review before work is "done" | Premature review | Complete the feature first |
 
 ---
 

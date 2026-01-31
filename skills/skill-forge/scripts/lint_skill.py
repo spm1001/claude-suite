@@ -434,8 +434,46 @@ def check_resources(skill_dir: Path) -> list[Check]:
     return checks
 
 
-def lint_skill(skill_path: Path) -> LintResult:
-    """Run all checks on a skill."""
+def detect_alias(content: str, frontmatter: Optional[dict]) -> Optional[str]:
+    """Detect if skill is an alias and return target skill name."""
+    # Check description for "Alias for X"
+    if frontmatter:
+        desc = frontmatter.get('description', '')
+        if 'alias' in desc.lower():
+            # Try to extract target from "Alias for session-closing" pattern
+            match = re.search(r'[Aa]lias\s+for\s+([a-z0-9-]+)', desc)
+            if match:
+                return match.group(1)
+
+    # Check body for "Immediately invoke the `skill-name` skill"
+    # Must be "Immediately" to avoid matching composition mentions like "also invoke"
+    match = re.search(r'[Ii]mmediately\s+invoke\s+the\s+`([a-z0-9-]+)`\s+skill', content)
+    if match:
+        return match.group(1)
+
+    return None
+
+
+def find_skill_path(skill_name: str, search_paths: list[Path]) -> Optional[Path]:
+    """Find skill directory by name in common locations."""
+    for base in search_paths:
+        candidate = base / skill_name
+        if candidate.exists() and (candidate / 'SKILL.md').exists():
+            return candidate
+    return None
+
+
+def lint_skill(skill_path: Path, follow_aliases: bool = True, _alias_chain: list[str] = None) -> LintResult:
+    """Run all checks on a skill.
+
+    Args:
+        skill_path: Path to skill directory
+        follow_aliases: If True, detect aliases and lint target skill instead
+        _alias_chain: Internal tracking to prevent infinite loops
+    """
+    if _alias_chain is None:
+        _alias_chain = []
+
     result = LintResult(
         skill_path=str(skill_path),
         skill_name=skill_path.name,
@@ -474,6 +512,68 @@ def lint_skill(skill_path: Path) -> LintResult:
         result.valid = False
         result.errors = 1
         return result
+
+    # Check for alias and follow if enabled
+    if follow_aliases:
+        # Quick frontmatter parse just for alias detection
+        fm, _ = extract_frontmatter(content)
+        target_name = detect_alias(content, fm)
+
+        if target_name:
+            # Prevent infinite loops
+            if target_name in _alias_chain:
+                result.checks.append(Check(
+                    name="alias_loop",
+                    passed=False,
+                    message=f"Alias loop detected: {' -> '.join(_alias_chain + [target_name])}",
+                    severity="error"
+                ))
+                result.valid = False
+                result.errors = 1
+                return result
+
+            # Find target skill
+            search_paths = [
+                skill_path.parent,  # Same directory (skills/)
+                Path.home() / '.claude' / 'skills',  # Global skills
+            ]
+            target_path = find_skill_path(target_name, search_paths)
+
+            if target_path:
+                # Record alias relationship
+                result.checks.append(Check(
+                    name="alias_detected",
+                    passed=True,
+                    message=f"Alias for '{target_name}' — following to target skill",
+                    severity="info"
+                ))
+
+                # Lint the target instead
+                target_result = lint_skill(
+                    target_path,
+                    follow_aliases=True,
+                    _alias_chain=_alias_chain + [skill_path.name]
+                )
+
+                # Merge results but keep alias context
+                result.skill_path = f"{skill_path} -> {target_result.skill_path}"
+                result.skill_name = f"{skill_path.name} -> {target_result.skill_name}"
+                result.checks.extend(target_result.checks)
+                result.errors = target_result.errors
+                result.warnings = target_result.warnings
+                result.score = target_result.score
+                result.valid = target_result.valid
+                return result
+            else:
+                result.checks.append(Check(
+                    name="alias_target_missing",
+                    passed=False,
+                    message=f"Alias target '{target_name}' not found",
+                    severity="error"
+                ))
+                result.valid = False
+                result.errors = 1
+                return result
 
     # Extract and validate frontmatter
     frontmatter, error = extract_frontmatter(content)
@@ -583,6 +683,8 @@ def main():
     parser.add_argument("skill_path", type=Path, help="Path to skill directory")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     parser.add_argument("--brief", action="store_true", help="Show only failures")
+    parser.add_argument("--no-follow-aliases", action="store_true",
+                        help="Don't follow alias skills to their targets")
     args = parser.parse_args()
 
     skill_path = args.skill_path.expanduser().resolve()
@@ -595,7 +697,7 @@ def main():
         print(f"Error: Path is not a directory: {skill_path}")
         sys.exit(1)
 
-    result = lint_skill(skill_path)
+    result = lint_skill(skill_path, follow_aliases=not args.no_follow_aliases)
 
     format_type = "json" if args.json else ("brief" if args.brief else "text")
     print(format_result(result, format_type))

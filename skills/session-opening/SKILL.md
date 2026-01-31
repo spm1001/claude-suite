@@ -22,6 +22,12 @@ Use `/open` for:
 - **Skill loading** — Ensures beads/todoist-gtd patterns are available
 - **After directory change** — Context is project-specific; if you cd'd, context may differ
 
+## When NOT to Use
+
+- Session just started (hook already ran)
+- Quick question that doesn't need full context
+- When you already have clear direction from user
+
 ## Prerequisites
 
 **Before running /open, verify infrastructure is healthy.** Silent failures here cause downstream confusion.
@@ -257,6 +263,15 @@ When user says "the email thing", "that feature", or similar:
 **Full draw-down patterns live in the tracker skill (beads or arc)** — that's why gate-loading matters.
 
 ---
+
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Skip draw-down on "continue X" | Scope ambiguity | Always read item, create TodoWrite |
+| Skip tracker skill loading | Missing workflow patterns | Gate-load beads/arc first |
+| Ignore script failures | Partial context, drift | STOP and diagnose if script fails |
+| Guess at ambiguous references | Wrong work picked up | Ask user which item they mean |
 
 ## Mirrors (GODAR)
 

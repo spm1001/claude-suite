@@ -1,39 +1,26 @@
 ---
 name: server-checkup
 user-invocable: false
-description: Systematic Linux server management with autonomous execution, risk assessment, and documentation. Use for server setup, audits, security hardening, and health checks. Triggers on 'check this server', 'audit', 'set up this machine', 'security audit', 'server health check', 'harden this Pi', 'run setup.sh', 'install Tailscale', 'fresh Pi setup', 'provision this server', 'bootstrap this machine'. (user)
+description: Systematic Linux server management. Use BEFORE making changes to capture baseline, then AFTER for verification. Triggers on 'check this server', 'audit', 'set up this machine', 'security audit', 'harden this Pi', 'fresh Pi setup', 'provision this server'. (user)
 ---
 
 # Server Maintenance
 
 Systematic Linux server management with autonomous execution, risk assessment, and documentation.
 
-**Upgraded from linux-server-fluency** with decision logic, context discovery, and active execution patterns.
+## When to Use
 
-## Description
+- Setting up a new server or Pi
+- Security audit or hardening
+- Health check on existing infrastructure
+- Before and after major changes (baseline → verify)
+- Post-reflash configuration
 
-Comprehensive server maintenance workflow:
-- Discovers existing documentation and incorporates context
-- Audits security, maintenance, and services
-- Provides risk-scored findings with actionable recommendations
-- Handles verbose operations via subagents
-- Generates structured maintenance reports
+## When NOT to Use
 
-Use for server setup, audits, hardening, and health checks.
-
-## Triggers
-
-- "check this server" / "audit this server"
-- "set up this machine" / "configure this server"
-- "audit this Pi" / "check this VPS"
-- "server health check" / "security audit"
-- "full server audit" (enables auto mode)
-- "harden this Pi" / "harden this server"
-- "run setup.sh" / "bootstrap this machine"
-- "install Tailscale on..." / "set up Tailscale"
-- "fresh Pi setup" / "provision this server"
-- Running setup/hardening scripts on Linux devices
-- Post-reflash Pi configuration
+- Non-Linux systems (macOS, Windows)
+- Cloud-managed services (use provider tools)
+- Quick one-off commands (just run them)
 
 ## Execution Modes
 
@@ -493,28 +480,9 @@ Available in `references/` directory:
 
 ## Usage Examples
 
-**Full audit:**
 ```
-check this server: kube.lan (user: admin)
-```
-
-**Security only:**
-```
-security audit: vps01 (user: root)
-```
-
-**With context:**
-```
-audit this server: pi.local (user: pi)
-Note: This is a jump box, expect Tailscale
-```
-
-**Auto mode:**
-```
-full server audit: production-db (user: admin)
-```
-
-**Skip phase:**
-```
-check this server: kube.lan, skip tailscale
+check this server: kube.lan (user: admin)     # Full audit
+security audit: vps01 (user: root)            # Security only
+full server audit: production-db              # Auto mode
+check this server: kube.lan, skip tailscale   # Skip phase
 ```

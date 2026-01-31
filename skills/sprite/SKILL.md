@@ -1,6 +1,6 @@
 ---
 name: sprite
-description: Controls InnerClaude instances on Sprites.dev VMs for testing workflows, install patterns, and Claude-to-Claude interaction. INVOKE BEFORE any 'sprite exec', 'inner Claude', 'test this workflow', 'Claude controlling Claude', or remote VM operations. Provides the critical tmux+pipe-pane pattern that makes OuterClaude/InnerClaude interaction work. Also covers checkpoint/restore and bootstrap. (user)
+description: Controls InnerClaude instances on Sprites.dev VMs for testing workflows, install patterns, and Claude-to-Claude interaction. INVOKE BEFORE any 'sprite exec', 'inner Claude', 'test this workflow', 'Claude controlling Claude', or remote VM operations. Documents the critical tmux+pipe-pane pattern that makes OuterClaude/InnerClaude interaction work. Also covers checkpoint/restore and bootstrap. (user)
 ---
 
 # Sprite Skill

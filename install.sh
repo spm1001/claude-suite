@@ -120,7 +120,8 @@ if [[ "$VERIFY_ONLY" == true ]]; then
 
     # Check skills
     info "Checking skills..."
-    for skill in beads close diagram filing github-cleanup open picture review screenshot server-checkup session-closing session-opening setup skill-check sprite titans; do
+    for skill_dir in "$SCRIPT_DIR"/skills/*/; do
+        skill=$(basename "$skill_dir")
         if [[ -L "$HOME/.claude/skills/$skill" ]]; then
             target=$(readlink "$HOME/.claude/skills/$skill")
             if [[ -d "$target" ]]; then
@@ -406,7 +407,8 @@ echo ""
 # Quick verification (silent unless errors)
 if [[ "$DRY_RUN" != true ]]; then
     VERIFY_ERRORS=0
-    for skill in beads close diagram filing github-cleanup open picture review screenshot server-checkup session-closing session-opening setup skill-check sprite titans; do
+    for skill_dir in "$SCRIPT_DIR"/skills/*/; do
+        skill=$(basename "$skill_dir")
         if [[ ! -L "$HOME/.claude/skills/$skill" ]] && [[ ! -d "$HOME/.claude/skills/$skill" ]]; then
             VERIFY_ERRORS=$((VERIFY_ERRORS + 1))
         fi

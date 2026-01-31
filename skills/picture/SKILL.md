@@ -1,7 +1,7 @@
 ---
 name: picture
 user-invocable: false
-description: Generate images using Google Imagen. Use when user needs presentation images, conceptual illustrations, photos, or visual assets that benefit from AI generation. Composes with itv-styling for brand-constrained outputs, and overlaps with diagramming for visual content.
+description: Generate images using Google Imagen. Use when user needs 'hero image', 'presentation visual', 'conceptual illustration', or 'generate an image'. Composes with itv-styling for brand-constrained outputs. (user)
 allowed-tools:
   - Bash
   - Read
@@ -167,6 +167,14 @@ Images save to `./images/` in the project directory:
 - Created on first use
 - Timestamped filenames for uniqueness
 - Stays with project for easy reference
+
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Skip brand check | Inconsistent styling | Load itv-styling first when brand applies |
+| Vague prompts | Poor results | Use specific, concrete descriptions |
+| Wrong tool for data | Inaccurate charts | Use diagram skill for precise data |
 
 ## See Also
 

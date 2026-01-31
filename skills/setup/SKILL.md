@@ -1,14 +1,28 @@
 ---
 name: setup
 description: >
-  Install behavioral skills from claude-suite. Creates symlinks for session lifecycle,
-  utilities, and optionally offers tool repos (todoist-gtd, claude-mem).
-  Triggers on 'help me set up', 'install skills', '/setup'.
+  Install behavioral skills from claude-suite. Use FIRST when onboarding a new machine
+  or after fresh Claude Code install. Creates symlinks for session lifecycle, utilities,
+  and optionally offers tool repos (todoist-gtd, claude-mem).
+  Triggers on 'help me set up', 'install skills', '/setup'. (user)
 ---
 
 # Setup
 
 Install Claude behavioral skills with one command.
+
+## When to Use
+
+- Fresh Claude Code installation
+- New machine setup
+- After cloning claude-suite for the first time
+- When `/open` or `/close` commands don't work
+
+## When NOT to Use
+
+- Skills are already installed and working
+- Just want to update existing skills (use `git pull` instead)
+- Installing a single skill (manually symlink it)
 
 ## Quick Start
 
@@ -135,3 +149,11 @@ Tell user to restart Claude (`/exit` then `claude`) to load new skills.
 cd ~/Repos/claude-suite && git pull
 # Symlinks automatically point to updated content
 ```
+
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Running setup when skills exist | Overwrites custom symlinks | Use `--verify` first |
+| Skipping OAuth for todoist-gtd | Skill fails silently | Complete auth flow |
+| Not restarting Claude after install | Skills not loaded | `/exit` then `claude` |

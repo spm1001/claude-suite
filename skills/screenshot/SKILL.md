@@ -59,10 +59,19 @@ Take screenshots to see what's on screen. Captures persist as files (unlike brow
 - Before/after comparisons
 - Bug evidence with screenshots
 
-**When NOT to use:**
-- For browser-only tasks where browsermcp snapshot suffices
-- When you just need to describe what's visible (use your existing context)
+## When NOT to Use
+
+- Browser-only tasks where browsermcp snapshot suffices
+- When you just need to describe what's visible
 - High-frequency captures that would clutter the directory
+
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Capture without purpose | Clutters context | Only screenshot when you need the visual |
+| Skip --list first | Wrong window captured | List windows to find exact app/title |
+| Native on large screens | Huge files, slow upload | Use default 1568px resize |
 
 ## Resolution Strategy
 

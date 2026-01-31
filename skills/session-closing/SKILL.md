@@ -1,12 +1,25 @@
 ---
 name: session-closing
-description: End-of-session ritual. Reflect while context is rich, then seal. Triggers on /close, 'wrap up', 'let's finish', or context nearly full. Pairs with /open. (user)
+description: End-of-session ritual. Use when session is ending — context nearly full, work complete, or user says 'wrap up'. Triggers on /close, 'wrap up', 'let's finish'. Pairs with /open. (user)
 user-invocable: false
 ---
 
 # /close
 
 Capture learnings while context is rich, then commit and exit.
+
+## When to Use
+
+- Session ending naturally (work complete)
+- Context window nearly full
+- User says "wrap up", "let's finish", "one more thing then done"
+- Main task complete and about to summarize
+
+## When NOT to Use
+
+- Mid-session checkpoint (use TodoWrite instead)
+- Quick question that doesn't need handoff
+- Exploratory work with no conclusions yet
 
 ## Structure
 
@@ -343,6 +356,17 @@ This enables future `/mem search` to find this session's content.
 **You don't need to do anything here** — just tell the user to `/exit` and the hook takes care of the rest.
 
 ---
+
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Compress reflection into multiple-choice | Defeats surfacing unexpected observations | Share observations first, then ask |
+| Skip pre-flight cd check | Handoff written to wrong project | Always run check-home.sh |
+| Write handoff locally (.handoff.md) | /open won't find it | Use HANDOFF_DIR from script |
+| Silently drop incomplete todos | Work disappears | Surface in Decide — finish, defer, or explicit drop |
+| Commit other repos | Unwanted "helpful" tidying | Only commit working directory |
+| Rush Orient to get to Act | Value compounds in reflection | Complete all three beats |
 
 ## GODAR Reference
 

@@ -329,6 +329,14 @@ Presenter auto-selects layouts based on:
 
 **Cells:** Content separated by blank lines goes into different cells. One element per cell usually looks better.
 
+## Anti-Patterns
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| Spaces for indentation | Content invisible on slides | MUST use tabs, not spaces |
+| Skip validation | Broken slides discovered in presentation | Test in iA Presenter app |
+| Too much per slide | Visual overload | One idea per slide |
+
 ## Full Reference
 
 See `references/syntax-reference.md` for complete documentation including:
