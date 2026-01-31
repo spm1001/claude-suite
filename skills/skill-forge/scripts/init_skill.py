@@ -1,0 +1,1 @@
+/Users/modha/.claude/skills/anthropic/skills/skill-creator/scripts/init_skill.py
