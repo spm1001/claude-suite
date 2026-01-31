@@ -7,6 +7,12 @@ description: Writes and validates iA Presenter markdown where tab-indentation co
 
 Write and edit markdown files for iA Presenter, which generates beautiful slides from plain text.
 
+## What is iA Presenter?
+
+iA Presenter is a macOS/iOS/iPadOS app from Information Architects (iA) — the same company that makes iA Writer. It takes markdown files and renders them as presentation slides with automatic responsive layout. The app emphasizes **story-first** presentation design: you write your script, and the design adapts to your content rather than forcing content into templates.
+
+Key differentiator: **visible/speaker notes separation** is controlled by indentation, not by a separate notes panel. This means your markdown file contains both what you show and what you say, distinguished only by whether lines are tab-indented.
+
 ## The Core Insight: Visible vs Speaker Notes
 
 iA Presenter's key innovation is separating **what the audience sees** from **what you say** (speaker notes/teleprompter). This is controlled by indentation:
