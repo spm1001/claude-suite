@@ -20,7 +20,7 @@ Generate AI images using Google Imagen via the Gemini API.
 ## When NOT to Use
 
 - **Precise diagrams or charts** — use `diagramming` skill (editable SVG, exact data)
-- **Screenshots** — use `screenshotting` skill
+- **Screenshots** — use `screenshot` skill
 - **Simple icons** — often faster to find stock or use emoji
 
 **Overlap with diagramming:** There's fuzzy boundary. A "chart for a presentation" could go either way:

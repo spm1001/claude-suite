@@ -394,6 +394,16 @@ When triaging files, follow this 5-step process:
    - Use Sublime Loop for batch processing multiple notes
    - For text files: Claude reads directly
    - For binary/GUI files: `open -a "Sublime Text" file.md` or `open file.pdf`
+   - **Office files in Google Drive (.docx, .xlsx, .pptx):** These open in native apps (Word, Excel, PowerPoint), not browser. To open in Google Docs instead, fetch the Drive URL via mise and open that:
+     ```bash
+     # Don't do this (opens in Word):
+     open "My Drive/document.docx"
+
+     # Do this instead (opens in browser):
+     # 1. Get file ID via mise search
+     # 2. open "https://docs.google.com/document/d/FILE_ID"
+     ```
+     Or flag to user: "These .docx files will open in Word — want Drive URLs instead?"
 
 2. **Rename** - Adjust filename to match actual content
    - Generic names like "Untitled" or "Copy of..." need proper names
