@@ -1,6 +1,6 @@
 ---
 name: filing
-description: File organization and weekly cleanup. Use when user asks 'where should this go', 'help me tidy', 'clean up downloads', 'clean up desktop', 'triage inbox', during weekly review cleanup, or when moving files between zones. (user)
+description: Orchestrates file cleanup with mandatory processing — reads content and extracts actions BEFORE moving files. Prevents lost waiting-fors and buried actions. MANDATORY during weekly review filing phase. Triggers on 'where should this go', 'help me tidy', 'clean up downloads', 'triage inbox'. (user)
 ---
 
 # Filing
