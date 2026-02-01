@@ -20,6 +20,19 @@ Help with file organization: where things belong and keeping inboxes clear.
 - Todoist organization (use todoist-gtd)
 - Code/repo organization (different rules apply)
 
+## Core Principle: Filing = Processing + Organizing
+
+**You can't file what you haven't processed.**
+
+Moving files without reading them isn't filing — it's relocating the problem. Proper filing means:
+
+1. **Processing** — Read content, extract what matters (actions, waiting-fors, calendar items)
+2. **Organizing** — Move to the right location with the right name
+
+If you skip processing, actions get lost, waiting-fors vanish, and meeting notes become information graves.
+
+**The test:** Before moving a file, can you answer: "What's in this and does anything need to happen?"
+
 ## Work Folder Structure
 
 Location: `~/Library/CloudStorage/GoogleDrive-*/My Drive/Work`
@@ -210,6 +223,100 @@ File organization chaos often symptoms deeper behavioral patterns. Surface these
 
 Don't skip the pattern check just because you tidied the files.
 
+## Processing (Before You File)
+
+Processing means reading and extracting — not just moving.
+
+### Processing Checklist (Meeting Notes)
+
+Before filing ANY meeting note:
+
+- [ ] **Read the content** — Don't just look at the title
+- [ ] **Extract actions (mine)** — Concrete next steps I need to take
+- [ ] **Extract waiting-fors** — `NAME: What they owe me` format
+- [ ] **Note calendar items** — Dates to add to calendar
+- [ ] **Quality check: empty?** — Delete (with confirmation)
+- [ ] **Quality check: misnamed?** — Rename to match content
+- [ ] **THEN move to destination**
+
+**Mandatory extraction:** Cannot file meeting notes until actions are extracted. This is not optional.
+
+### Processing Other File Types
+
+| File Type | Processing Required |
+|-----------|---------------------|
+| Meeting notes | Full checklist above |
+| Quick notes | Check for actions, then file or delete |
+| Voice transcripts | Read transcript, extract actions, then file or delete |
+| PDFs/docs | Understand content for proper filing location |
+| Screenshots | Determine project context, file or delete |
+
+## Action Extraction Workflow (Sublime Loop)
+
+When processing multiple meeting notes with actions:
+
+### 1. Extract to Temp File
+
+Create structured sections:
+
+```markdown
+## Waiting For
+NAME: What they owe me
+
+## Ping
+Quick actions for me to do
+
+## Calendar
+Date - Event to add
+```
+
+### 2. Open for Review
+
+```bash
+open -a "Sublime Text" /tmp/meeting-actions.md
+```
+
+### 3. Tell User
+
+"Edit, save, let me know when ready"
+
+User fixes:
+- Names (Susie → Susan)
+- Stale/irrelevant items (delete)
+- Vague actions (clarify)
+
+### 4. After Save
+
+Read file, add to Todoist via todoist-gtd skill.
+
+**Why this works:**
+- User sees all actions at once
+- Catches errors before they hit Todoist
+- Disambiguation happens in familiar editor
+- Claude processes clean, user-approved list
+
+## Meeting Source Discovery
+
+At weekly review start, check beyond the 9 zones.
+
+### Standing Docs (Always Check)
+
+**Prompt first:** "Any changes to this standing docs list? (Add/remove as your meetings evolve)"
+
+| Doc | ID |
+|-----|-----|
+| MIT: Start the Week | `19NqCEPMSOdIdouFqVaHZVA-GyJmkmPjLGyNknTJpU3M` |
+| Client Reference | `1owM77DjcTwHjrTfHs9zEfQfNyeFfmtheokBGvkPD8II` |
+| Supplier Reference | `1b2vaWpGx-fUj48vuQ0KmIirDu5loodC7F4j3XGV4_DU` |
+| Notes – WEEKLY senior team catch up | `1B5X-MrSzldgFElppNlk4s_PDgpIJ0H5Sul74uqQnTs8` |
+| TVA/MP/ITV Status | `1tCuph3QWiObYImjb-7nfPPI2Q-D2RjAtou-dceHa45c` |
+
+### Calendar-Linked Docs
+
+**Prompt:** "What recurring meetings had sessions this week? Any have running docs I should check?"
+
+(Future: mise calendar integration to auto-discover — see mise-en-space backlog)
+
 ## Filing Decisions
 
 ### "Where does this go?"
@@ -281,7 +388,10 @@ Report which zones have content before starting. Don't skip zones that look empt
 
 When triaging files, follow this 5-step process:
 
-1. **Review** - Read content to understand what the file actually is
+1. **Process** - Read content, extract what matters
+   - For meeting notes: extract actions, waiting-fors, calendar items (see Processing section)
+   - For other files: understand content for proper filing
+   - Use Sublime Loop for batch processing multiple notes
    - For text files: Claude reads directly
    - For binary/GUI files: `open -a "Sublime Text" file.md` or `open file.pdf`
 
@@ -359,6 +469,9 @@ During weekly review, check all 9 cleanup zones:
 
 | Pattern | Problem | Fix |
 |---------|---------|-----|
+| File without reading | Actions lost | Mandatory processing first |
+| Bulk move meeting notes | Waiting-fors vanish | Use Sublime Loop, extract first |
+| Skip running docs | Miss recurring meeting actions | Check standing docs + calendar prompt |
 | Skip zones during weekly review | Clutter accumulates | Check ALL 9 zones explicitly |
 | Keep "just in case" | Folders bloat | Delete liberally, most things don't need keeping |
 | File without renaming | Untitled docs pile up | Rename to content-descriptive name first |
