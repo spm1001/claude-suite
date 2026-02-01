@@ -54,6 +54,17 @@ quick_health_check() {
 
 quick_health_check
 
+# Check for skills missing permissions (quick, non-blocking)
+PERM_SCRIPT="$SCRIPTS_DIR/sync-skill-permissions.sh"
+if [ -x "$PERM_SCRIPT" ]; then
+    MISSING=$("$PERM_SCRIPT" 2>/dev/null | grep -c "Skill(" || echo 0)
+    if [ "$MISSING" -gt 0 ]; then
+        echo "=== SKILL PERMISSIONS ==="
+        "$PERM_SCRIPT" 2>/dev/null
+        echo ""
+    fi
+fi
+
 # Timing telemetry (milliseconds via perl, seconds fallback)
 ms_now() { perl -MTime::HiRes=time -e 'printf "%d", time * 1000' 2>/dev/null || echo $(($(date +%s) * 1000)); }
 HOOK_START=$(ms_now)
