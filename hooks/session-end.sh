@@ -74,10 +74,10 @@ nohup bash -c '
     cd "$MEM_PROJECT" && uv run mem scan --source handoffs --source beads >> "$LOG_FILE" 2>&1 || true
 
     # Nibble at unprocessed Meeting Notes (local_md source)
-    # Rate: ~3 per session, ~15/day at 5 sessions/day
+    # Rate: ~10 per session, ~50/day at 5 sessions/day
     echo "" >> "$LOG_FILE"
     echo "=== Nibbling local_md backlog ===" >> "$LOG_FILE"
-    cd "$MEM_PROJECT" && uv run mem backfill --limit 3 --source-type local_md >> "$LOG_FILE" 2>&1 || true
+    cd "$MEM_PROJECT" && uv run mem backfill --limit 10 --source-type local_md >> "$LOG_FILE" 2>&1 || true
 
     echo "" >> "$LOG_FILE"
 
