@@ -420,6 +420,15 @@ When triaging files, follow this 5-step process:
 
 5. **File** - Move to correct location (or delete)
    - See "Filing Decisions" section for where things go
+   - **After filing Meeting Notes:** Extract to memory for searchability
+     ```bash
+     # Re-scan to pick up the filed document
+     cd ~/Repos/claude-mem && uv run mem scan --source local_md
+
+     # Extract entities from the filed document
+     SOURCE_ID="local_md:$(basename "$DEST_PATH")"
+     cd ~/Repos/claude-mem && uv run mem extract "$SOURCE_ID" 2>/dev/null || true
+     ```
 
 ## Archive vs Reference
 
