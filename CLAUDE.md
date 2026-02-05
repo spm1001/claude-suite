@@ -113,8 +113,7 @@ Arc emerged as a lighter alternative: outcomes + actions, GTD vocabulary native,
 
 1. Create `skills/<name>/SKILL.md` with frontmatter
 2. Add `skills/<name>/README.md` (optional but recommended)
-3. **Update `install.sh` verification list** (lines 123 and 409) — hardcoded, requires manual sync
-4. Run `./install.sh` to create symlink
+3. Run `./install.sh` to create symlink (install.sh globs `skills/*/`, no hardcoded list)
 
 ### Adding a New Script
 
