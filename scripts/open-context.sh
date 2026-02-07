@@ -110,6 +110,7 @@ fi
 ARC_FILE="$CONTEXT_DIR/arc.txt"
 ARC_CMD=""
 ARC_LIST_OUTPUT=""
+ARC_READY_OUTPUT=""
 ARC_CURRENT_OUTPUT=""
 
 if [ -d ".arc" ]; then
@@ -117,6 +118,7 @@ if [ -d ".arc" ]; then
 
     if [ -x "$ARC_CMD" ]; then
         ARC_LIST_OUTPUT=$("$ARC_CMD" list 2>/dev/null || true)
+        ARC_READY_OUTPUT=$("$ARC_CMD" list --ready 2>/dev/null || true)
         ARC_CURRENT_OUTPUT=$("$ARC_CMD" show --current 2>/dev/null || true)
 
         # Write full hierarchy to disk
@@ -125,7 +127,7 @@ if [ -d ".arc" ]; then
             echo "# Generated for: $CWD"
             echo ""
             echo "## Ready Work"
-            "$ARC_CMD" list --ready 2>/dev/null || true
+            echo "$ARC_READY_OUTPUT"
             echo ""
             echo "## Full Hierarchy"
             echo "$ARC_LIST_OUTPUT"
@@ -156,15 +158,10 @@ echo ""
 
 # --- Arc: outcomes + zoom ---
 if [ -d ".arc" ] && [ -n "$ARC_CMD" ] && [ -x "$ARC_CMD" ]; then
-    # Extract outcome titles (lines starting with a status marker, no indentation = outcome)
-    OUTCOME_LINES=$(echo "$ARC_LIST_OUTPUT" | grep -E '^[○✓]' || true)
-
-    if [ -n "$OUTCOME_LINES" ]; then
+    if [ -n "$ARC_READY_OUTPUT" ]; then
         echo "Outcomes we're working towards:"
-        echo "$OUTCOME_LINES" | while IFS= read -r line; do
-            # Strip the arc ID in parentheses for the compact view
-            TITLE=$(echo "$line" | sed 's/ ([a-zA-Z0-9-]*)$//')
-            echo "  $TITLE"
+        echo "$ARC_READY_OUTPUT" | while IFS= read -r line; do
+            [ -n "$line" ] && echo "  $line"
         done
         echo ""
     fi
