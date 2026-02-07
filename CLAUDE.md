@@ -19,20 +19,21 @@ Session lifecycle skills follow GODAR:
 
 This pattern ensures systematic context transfer between sessions. See `/open` and `/close` skill implementations.
 
+## Session Start Behaviour
+
+**When the session-start hook provides context (outcomes, handoff summary), orient the user in your first response.** Don't wait for /open — the briefing is there for both of you. Present the outcomes, mention the last session, and ask what they want to work on.
+
+The /open skill is still available for re-orientation mid-session or after changing directories, but the initial orientation should happen automatically from the hook output.
+
 ## Hook Architecture
 
-**Output contract:** Hooks output *pointers* to content, not content itself. This avoids token bloat.
-
-| Output To | Purpose |
-|-----------|---------|
-| stdout | Notifications Claude receives directly (brief) |
-| Files | Content Claude reads on demand via Read tool |
-
-**Section format:** `=== SECTION ===` markers allow parsing specific parts.
+**Output contract:** `open-context.sh` outputs a compact briefing to stdout (outcomes, last-worked zoom, handoff summary). Full detail lives on disk (arc.txt, handoffs.txt) for when Claude needs to dig deeper.
 
 **Hook chain:**
-- `hooks/session-start.sh` → calls `scripts/open-context.sh`
+- `hooks/session-start.sh` → calls `scripts/open-context.sh` (briefing to stdout, detail to disk)
 - `scripts/close-context.sh` ← called by /close skill
+
+**Full architecture audit:** See `references/HOOKS_AND_SCRIPTS.md`
 
 ## Titans Review Process
 

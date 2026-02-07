@@ -14,16 +14,17 @@ Interpret context and load companion skills.
 
 ## When to Use
 
-**Context is surfaced automatically at session start via hook.** The hook provides data; this skill provides behavior.
+**Session start context is now automatic.** The hook outputs a compact briefing (outcomes, last-worked zoom, handoff summary) that Claude should act on in the first response — no /open needed.
 
 Use `/open` for:
-- **Re-orientation** — "Show me the context again"
+- **Re-orientation** — "Show me the context again" (mid-session)
 - **Skill loading** — Ensures arc/todoist-gtd patterns are available
 - **After directory change** — Context is project-specific; if you cd'd, context may differ
+- **Deeper dig** — When you need full handoff content or complete arc hierarchy beyond the briefing
 
 ## When NOT to Use
 
-- Session just started (hook already ran)
+- Session just started and you can see the briefing (orient from it directly)
 - Quick question that doesn't need full context
 - When you already have clear direction from user
 
