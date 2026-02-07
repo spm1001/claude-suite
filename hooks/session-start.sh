@@ -9,6 +9,25 @@
 
 set -euo pipefail
 
+# Skip for subagent (claude -p) invocations.
+# Without this guard, each subagent triggers the full startup ritual
+# (health checks, open-context, update-all), and update-all spawns mem
+# extraction which spawns more claude -p subagents — recursive fork bomb.
+#
+# Fast path: explicit env var from known subagent spawners (e.g. claude-mem)
+[ -n "${MEM_SUBAGENT:-}" ] && exit 0
+# Slow path: catch any claude -p subagent we didn't anticipate
+_pid=$$
+for _ in 1 2 3 4 5; do
+    _pid=$(ps -o ppid= -p "$_pid" 2>/dev/null | tr -d ' ')
+    [ -z "$_pid" ] || [ "$_pid" = "1" ] && break
+    _cmd=$(ps -o args= -p "$_pid" 2>/dev/null || true)
+    if [[ "$_cmd" == *"claude"* ]]; then
+        [[ "$_cmd" == *" -p "* || "$_cmd" == *"--no-session-persistence"* ]] && exit 0
+        break  # found interactive claude, continue with hook
+    fi
+done
+
 # Scripts are in sibling folder, but we check via ~/.claude/scripts/ symlinks
 # which is what actually matters for the user's setup
 SCRIPTS_DIR="$HOME/.claude/scripts"

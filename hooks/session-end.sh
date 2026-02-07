@@ -9,6 +9,21 @@
 # Uses full daemonization to prevent terminal corruption.
 #
 
+# Skip for subagent (claude -p) invocations — no point extracting ephemeral subagent sessions.
+# Without this guard, mem backfill spawns claude -p → subagent exits → session-end fires →
+# extraction spawns mem backfill → recursive fork bomb.
+[ -n "${MEM_SUBAGENT:-}" ] && exit 0
+_pid=$$
+for _ in 1 2 3 4 5; do
+    _pid=$(ps -o ppid= -p "$_pid" 2>/dev/null | tr -d ' ')
+    [ -z "$_pid" ] || [ "$_pid" = "1" ] && break
+    _cmd=$(ps -o args= -p "$_pid" 2>/dev/null || true)
+    if [[ "$_cmd" == *"claude"* ]]; then
+        [[ "$_cmd" == *" -p "* || "$_cmd" == *"--no-session-persistence"* ]] && exit 0
+        break
+    fi
+done
+
 LOG_DIR="$HOME/.claude/extraction-logs"
 ENV_FILE="$HOME/.claude/memory/env"
 MEM_PROJECT="$HOME/Repos/claude-mem"
