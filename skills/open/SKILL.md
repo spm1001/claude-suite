@@ -72,7 +72,7 @@ Act           → Draw-down from Arc
 | @Claude items in context OR Todoist in handoff | Offer `Skill(todoist-gtd)` | GTD framing, inbox check |
 | User seems disoriented about past work | Offer `Skill(memory)` | Ancestral lookup |
 
-**Work tracker is mandatory when present.** The draw-down pattern (item → work with checkpoints) is where drift gets caught. Arc tactical extension (when built) will provide checkpoint mechanism. Until then, work directly from Arc with explicit pauses.
+**Work tracker is mandatory when present.** The draw-down pattern (item → `arc work` → `arc step`) is where drift gets caught. Tactical steps persist in `items.jsonl`, enforce serial execution, and survive session crashes.
 
 - **Arc** is the default — outcomes and actions, simpler CLI, GTD vocabulary built-in
 - **Beads** is deprecated — if `.beads/` exists without `.arc/`, suggest migration
