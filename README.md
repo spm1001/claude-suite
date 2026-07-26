@@ -10,7 +10,7 @@ A skill drawer for [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 
 ## What This Does
 
-Trousse provides 18 skills as SKILL.md files. Each one is a structured instruction set Claude reads and follows when you invoke the slash command.
+Trousse provides skills as SKILL.md files. Each one is a structured instruction set Claude reads and follows when you invoke the slash command.
 
 Session lifecycle (startup briefings, handoffs, tactical tracking) is handled by [bon](https://github.com/spm1001/bon), not trousse. Trousse is purely skills.
 
@@ -33,29 +33,26 @@ The plugin system discovers skills from `skills/*/SKILL.md` automatically.
 
 ## Skills
 
+<!-- GENERATED:SKILLS:START -->
+5 skills, tabled from `skills/*/SKILL.md` frontmatter by [render-skills.py](https://github.com/spm1001/batterie-de-savoir/blob/main/scripts/render-skills.py) — regenerate from this repo's root with
+`uv run --script ../batterie-de-savoir/scripts/render-skills.py .`
+
 | Skill | What it does |
 |-------|--------------|
-| `/titans` (or `/review`) | Three-lens code review: hindsight, craft, foresight |
-| `/skill-forge` | Build and validate new skills |
-| `/ardoise` | Context-isolated Claude (blank-slate testing) |
-| `/deglacer` | CC session JSONL parsing — schema reference + CLI |
+| `/ardoise` | Spawns an isolated Claude with no CLAUDE.md, no skills, no hooks, no plugin context — only training weights and built-in skills |
+| `/deglacer` | MANDATORY gate BEFORE running jq on any .jsonl under ~/.claude/ or reading past CC sessions |
+| `/review` | Code review alias |
+| `/skill-forge` | Orchestrates all skill development — required before writing or editing any SKILL.md file |
+| `/titans` | Three-lens code review using parallel subagents: Epimetheus (hindsight — bugs, debt, fragility), Metis (craft — clarity, idiom, fit-for-purpose), Prometheus (foresight — vision, extensibility, future-Claude) |
+<!-- GENERATED:SKILLS:END -->
 
 ## Directory Structure
 
 ```
 trousse/
-├── skills/                 # 18 skill definitions (SKILL.md files)
-│   ├── titans/             #   → three-lens code review
-│   ├── diagram/            #   → diagramming workflow
-│   ├── skill-forge/        #   → skill development + validation
-│   └── ...
+├── skills/                 # Skill definitions (skills/<name>/SKILL.md)
 ├── scripts/                # Utility scripts used by skills
-│   ├── ardoise.sh          #   → context isolation for spawned Claudes
-│   └── bon-survey.py       #   → survey automation for claude-survey skill
-├── hooks/
-│   └── hooks.json          #   → empty (trousse registers no hooks)
-├── references/             # Architecture docs (not loaded automatically)
-│   └── ERROR_PATTERNS.md   #   → troubleshooting guide
+├── hooks/                  # hooks.json + session-start.sh
 ├── tests/                  # pytest suite
 └── CLAUDE.md               # Instructions Claude reads when working in this repo
 ```
