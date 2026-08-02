@@ -67,7 +67,7 @@ class TestReferencedFiles:
 
         Only checks references/ paths (definitionally skill-local).
         scripts/ paths are not checked — they often refer to
-        external tools (todoist-gtd, skill-creator, etc.).
+        external tools (accomplis, skill-creator, etc.).
         """
         skill_md = skill_path / "SKILL.md"
         content = skill_md.read_text()
