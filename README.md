@@ -34,13 +34,14 @@ The plugin system discovers skills from `skills/*/SKILL.md` automatically.
 ## Skills
 
 <!-- GENERATED:SKILLS:START -->
-5 skills, tabled from `skills/*/SKILL.md` frontmatter by [render-skills.py](https://github.com/spm1001/batterie-de-savoir/blob/main/scripts/render-skills.py) — regenerate from this repo's root with
+6 skills, tabled from `skills/*/SKILL.md` frontmatter by [render-skills.py](https://github.com/spm1001/batterie-de-savoir/blob/main/scripts/render-skills.py) — regenerate from this repo's root with
 `uv run --script ../batterie-de-savoir/scripts/render-skills.py .`
 
 | Skill | What it does |
 |-------|--------------|
 | `/ardoise` | Spawns an isolated Claude with no CLAUDE.md, no skills, no hooks, no plugin context — only training weights and built-in skills |
 | `/deglacer` | MANDATORY gate BEFORE running jq on any .jsonl under ~/.claude/ or reading past CC sessions |
+| `/hublot` | Orchestrates a real interactive Claude Code session under tmux using a start/wait/read/stop cycle — answers its dialogs, polls its screen for patterns, tears it down cleanly |
 | `/review` | Code review alias |
 | `/skill-forge` | Orchestrates all skill development — required before writing or editing any SKILL.md file |
 | `/titans` | Three-lens code review using parallel subagents: Epimetheus (hindsight — bugs, debt, fragility), Metis (craft — clarity, idiom, fit-for-purpose), Prometheus (foresight — vision, extensibility, future-Claude) |
