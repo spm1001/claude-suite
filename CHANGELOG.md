@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed (2026-08-17)
+- `ardoise` + `hublot` script-locate fallback: `sort -r` → `sort -rV`. Lexicographic sort resolved `1.8.7` above `1.66.0` on a multi-version plugin cache, handing callers a months-stale script (trousse-jiluru, trousse-rozoso).
+- `ardoise.sh` print mode: now honours `START_DIR` and gains `--cwd DIR` (which the seeder pre-trusts). Was hardcoded `cd /tmp`, so `-p` probes could not run inside a target repo and inherited /tmp's shared clutter (trousse-fawufi, trousse-rozoso).
+
 Skill-estate slim-down (bon `trousse-pijuha`): trousse is being pared to a tight public core — public status is *earned* on genuine stranger-appeal, not the default. ITV-flavoured skills move to `mit-commons` (renamed prosaically), Sameer-wired ones to `trousse-personal`, `diagram` to the `dragram` repo, and the dead weight retires. This ships the whole slim-down — retirements plus moves to `mit-commons`, `trousse-personal`, and the `dragram` repo. trousse's `CLAUDE.md` now carries a durable **Skill homes** rule (public is *earned* on stranger-appeal, not the default). trousse goes from 18 skills to a core of **4**: `skill-forge`, `titans` (+`/review`), `deglacer`, `ardoise`.
 
 ### Removed

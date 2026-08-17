@@ -1,6 +1,6 @@
 # Understanding — trousse
 
-*Seeded 2026-08-09 from the 2026-07-19 handoff (session 511191c5); last synthesis 2026-08-09 evening from the deglacer-accuracy-day handoff (session f4ed134d).*
+*Seeded 2026-08-09 from the 2026-07-19 handoff (session 511191c5); last synthesis 2026-08-17 from the wunule-night handoff (session b324fa3e).*
 
 ## What trousse is now
 
@@ -13,6 +13,12 @@ A **tight public knife-roll of 5 skills** — `skill-forge`, `titans` (+ `/revie
 ## Evidence classes for third-party tools (durable, 2026-08-09)
 
 **A tool's measured behaviour and its documented surface are different evidence classes — sample the first, fetch the second, never generalise one into the other.** The deja session verified `--help` performs a literal search (true, measured) and shipped "no flags, no subcommands" (false — one `gh api .../readme` call would have shown `--re`, `--since`, `show`, `blame`). The subagent test passed because it exercised *routing to* the tool, not the *accuracy of claims about* it — an unearned green orthogonal to the failure. Prevention costs one API call before writing any interface claim about third-party code.
+
+**And the classes compose** (wunule night, 2026-08-09): a matched pair already measured live + the walk code read from pinned source = mechanism confirmed with zero additional risk. **Read the pinned source before designing a workaround for a third-party tool** — the Go module cache (`~/.local/share/go/pkg/mod/...@v0.16.9`) is on disk and sumdb-verified, and 90 seconds of grep found `DEJA_CLAUDE_ROOT`, a purpose-built escape hatch no amount of black-box probing would have surfaced.
+
+## Ordering a destructive verification so the cost pays twice (durable, 2026-08-09)
+
+When confirming a destructive repro looks "too expensive" (another index wipe, another rebuild), check whether a bill you already owe can be routed through the same run. The wunule index was already wiped, so the 5-minute re-index was sunk cost — running the *fix-condition* probe first made one run pay for mechanism proof, fix proof, and estate repair. Companion deflator for hazard-class worries: **classify by discriminator, not by resemblance** — the deja class needed all three of config-following + symlink-blind walker + shared mutable artifact, and only deja had them.
 
 ## External code in a key pipeline (durable, 2026-08-09)
 
@@ -32,4 +38,4 @@ Three composable guards, all built for deja and reusable: a **leash** (the `banc
 
 ## Current board themes
 
-Two clusters: **deglacer accuracy** (trousse-guriku/jejozo: slash-command schema errors to verify against live JSONL; trousse-wunule: deja blind — and index-wiping — under CLAUDE_CONFIG_DIR) and **skill-forge hardening** (trousse-muhejo/vamawu: bench-measured writing rules; trousse-ferupi: attention-narrowing checks; trousse-bujuta: scan.py vacuous green). Eval v2 shapes (echo-probe, tool-result-only) are deferred, raised on the banc board (banc-bizeko).
+Wunule closed end-to-end 2026-08-09 (mechanism confirmed from pinned source, `DEJA_CLAUDE_ROOT` fix wired into `_claude_commis`, index repaired, quirk bullet published in 1.48.1). Remaining clusters: **deglacer accuracy** (trousse-guriku/jejozo: slash-command schema errors to verify against live JSONL) — but note **deglacer is leaving trousse** (trousse-wazula, waiting on bds-numeri, the deglacer plugin shipping): hold deglacer edits until the move lands. **skill-forge hardening** (trousse-muhejo/vamawu: bench-measured writing rules; trousse-ferupi: attention-narrowing checks; trousse-bujuta: scan.py vacuous green; trousse-wowujo: provenance flags; trousse-susoni: cowork-cloud reference). **Field-report piles** on hublot (nibajo: types-but-doesn't-submit; vurojo: teardown ghost-text; pezogu: key-verb recipe) and ardoise (jiluru/rozoso: stale cache sibling via lexicographic version sort; fawufi: print mode hardcodes cwd=/tmp). Eval v2 shapes (echo-probe, tool-result-only) are deferred, raised on the banc board (banc-bizeko). The deja upstream issue is parked **by decision** — don't post it, don't re-litigate.
