@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Added (2026-08-28)
+- `deglacer`: four measured rows on **programmatically-spawned sessions** — the ones that are invisible or nameless in the `claude --resume` picker (trousse-potumo).
+  - A teleport id `session_<body>` and the Remote Control work id `cse_<body>` are one id with two prefixes. The local UUID is *not* derivable from it (uuid3/uuid5 over the standard namespaces all miss; the namespace is private to the CC bundle) — it is a lookup.
+  - `~/.claude/logs/bridge-transcript-cse_<body>.jsonl` carries the local UUID in `.session_id`. Read it structurally: a raw grep for a UUID also matches UUIDs merely quoted in the transcript's own tool output, and that echo hit made two sessions claim one teleport id in a first draft.
+  - **The v5 tell** — these get a version-5 UUID (char 15 of the filename) because the id is derived by hashing a caller-supplied session id; interactive sessions get a v4. Every v5 sampled had `entrypoint=sdk-cli`; v4 is mixed, so the implication runs one way only.
+  - Why they miss the picker: they never get an `ai-title`. Era-matched, v4 21/25 titled vs v5 **0/12**.
+- `scripts/teleport-id.sh` — translate a teleport id to a local UUID, with a title-match fallback for when the bridge transcript has been cleaned up (retention is ~a day).
+- `scripts/remote-sessions.sh` — list programmatically-spawned sessions by date, cwd and first prompt, marking which are still teleport-resolvable.
+- Both scripts are **bash 3.2 clean** so they run on macOS's stock `/bin/bash`; verified there against a synthetic positive, with the pre-fix version confirmed dying on `mapfile: command not found`.
+
+### Fixed (2026-08-28)
+- `deglacer` File Discovery: the `{encoded-cwd}` note now says the encoding is **one-way**. Every `/` became a `-`, so any repo with a dash in its name decodes wrongly — `-home-modha-repos-spm1001-mise-en-space` → `.../mise/en/space`, which does not exist. Read `.cwd` off the transcript instead.
+
 ### Fixed (2026-08-17)
 - `ardoise` + `hublot` script-locate fallback: `sort -r` → `sort -rV`. Lexicographic sort resolved `1.8.7` above `1.66.0` on a multi-version plugin cache, handing callers a months-stale script (trousse-jiluru, trousse-rozoso).
 - `ardoise.sh` print mode: now honours `START_DIR` and gains `--cwd DIR` (which the seeder pre-trusts). Was hardcoded `cd /tmp`, so `-p` probes could not run inside a target repo and inherited /tmp's shared clutter (trousse-fawufi, trousse-rozoso).
