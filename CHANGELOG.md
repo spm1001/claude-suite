@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed (2026-08-28)
+- The two teleport scripts move from `scripts/` into `skills/deglacer/scripts/`, so they travel with the skill. Rationale: `trousse-wazula` / `bds-numeri` have the deglacer skill leaving trousse for its own plugin, and a relocation of `skills/deglacer` would have left root-level scripts behind — failing *silently*, because SKILL.md's cache fallback would keep resolving them from a stale trousse cache until the user next updated. The fallback glob is now `*/skills/deglacer/scripts/…` rather than `*/trousse/*/scripts/…`, so it survives the move to any plugin.
+- `remote-sessions.sh` guards `rg` and falls back to `grep -Eho`, matching its sibling. Without it, a machine with no `rg` (stock macOS) silently marked 6 sessions teleport-resolvable instead of 37 — verified the two forms find identical id sets, and that the script runs clean on macOS bash 3.2 where `rg` is genuinely absent.
+
 ### Corrected (2026-08-28)
 - **`deglacer` shipped a wrong claim in 1.78.0 and this fixes it.** That release said the local UUID was "not derivable from" a teleport id and "a lookup, not a computation". It is derivable. Reading the CC bundle (`rg -a` over the bundled-Node ELF) turns up `var Z="3ab19d7e-9f35-45c2-926e-75e271cc60b3"` and the call `QY(t.href, Z)`, so:
   `uuid5("3ab19d7e-9f35-45c2-926e-75e271cc60b3", "https://api.anthropic.com/v1/code/sessions/cse_<body>")`.
