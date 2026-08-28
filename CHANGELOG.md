@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Corrected (2026-08-28)
+- **`deglacer` shipped a wrong claim in 1.78.0 and this fixes it.** That release said the local UUID was "not derivable from" a teleport id and "a lookup, not a computation". It is derivable. Reading the CC bundle (`rg -a` over the bundled-Node ELF) turns up `var Z="3ab19d7e-9f35-45c2-926e-75e271cc60b3"` and the call `QY(t.href, Z)`, so:
+  `uuid5("3ab19d7e-9f35-45c2-926e-75e271cc60b3", "https://api.anthropic.com/v1/code/sessions/cse_<body>")`.
+  Confirmed 6/6 against sessions with a surviving bridge transcript, then out-of-sample on 6 whose transcripts had been cleaned up.
+- The original brute-force had even tried the correct namespace — against the wrong *name* (the bare id, not the resume URL). The skill now carries the transferable lesson: a negative result from a search over guessed candidates is a statement about the guesses, not the system.
+- `scripts/teleport-id.sh` computes first and falls back to the logs, cross-checking against a bridge transcript when one exists and shouting if they disagree (that disagreement being the tell that the constant has moved).
+- `scripts/remote-sessions.sh` now computes teleport ids for every `cse_` seen in the bridge logs, so it marks sessions whose transcripts are long gone — 37 resolvable on one estate where it was 6.
+
 ### Added (2026-08-28)
 - `deglacer`: four measured rows on **programmatically-spawned sessions** — the ones that are invisible or nameless in the `claude --resume` picker (trousse-potumo).
   - A teleport id `session_<body>` and the Remote Control work id `cse_<body>` are one id with two prefixes. The local UUID is *not* derivable from it (uuid3/uuid5 over the standard namespaces all miss; the namespace is private to the CC bundle) — it is a lookup.
