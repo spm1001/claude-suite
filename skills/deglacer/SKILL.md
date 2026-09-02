@@ -456,6 +456,7 @@ done
 |-------|-----|-----------|
 | `jq -s '.'` on JSONL | Slurps entire file into memory as array | Stream line-by-line (default jq behaviour) |
 | `jq '.[]'` on JSONL | JSONL isn't an array | Each line is already a separate object |
+| A path starting with `-` passed to `jq` (e.g. `jq … -home-modha/abc.jsonl`) | Every dir under `projects/` is a cwd with `/`→`-`, so the filename IS an option string. jq prints its usage once per file and the failure reads as a broken filter rather than a bad path | Absolute paths (`/home/…/projects/-home-modha/abc.jsonl`), or prefix `./` |
 | `.role` at top level | Role is at `.message.role`, not top-level | Use `.type` for entry type |
 | `.type == "message"` | No such type | Types: `user`, `assistant`, `progress`, `system`, etc. |
 | `.type == "human"` | No such type | `.type == "user"` + check it's not a tool result |
